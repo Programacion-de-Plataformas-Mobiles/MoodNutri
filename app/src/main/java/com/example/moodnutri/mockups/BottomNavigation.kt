@@ -1,29 +1,26 @@
 package com.example.moodnutri.mockups
 
-import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material.icons.filled.Scanner
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
 @Composable
-fun SharedBottomNavigationBar(selectedTab: String) {
+fun SharedBottomNavigationBar(
+    navController: NavController,
+    selectedTab: String
+) {
     NavigationBar(
         containerColor = Color.White,
-        modifier = Modifier.height(80.dp)
     ) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home", fontSize = 10.sp) },
             selected = selectedTab == "Home",
-            onClick = { /* TODO: Navigate to Home */ },
+            onClick = { navController.navigate("home") },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = Color(0xFF4CAF50),
                 selectedTextColor = Color(0xFF4CAF50),
@@ -32,10 +29,10 @@ fun SharedBottomNavigationBar(selectedTab: String) {
             )
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Scanner, contentDescription = "Ingredientes") },
-            label = { Text("Ingredientes", fontSize = 10.sp) },
-            selected = selectedTab == "Ingredientes",
-            onClick = { /* TODO: Navigate to Ingredientes */ },
+            icon = { Icon(Icons.Default.Fastfood, contentDescription = "Ingredients") },
+            label = { Text("Ingredients", fontSize = 10.sp) },
+            selected = selectedTab == "Ingredients",
+            onClick = { navController.navigate("scan_ingredients") },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = Color(0xFF4CAF50),
                 selectedTextColor = Color(0xFF4CAF50),
@@ -47,7 +44,7 @@ fun SharedBottomNavigationBar(selectedTab: String) {
             icon = { Icon(Icons.Default.Restaurant, contentDescription = "Recipes") },
             label = { Text("Recipes", fontSize = 10.sp) },
             selected = selectedTab == "Recipes",
-            onClick = { /* TODO: Navigate to Recipes */ },
+            onClick = { navController.navigate("recipe") },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = Color(0xFF4CAF50),
                 selectedTextColor = Color(0xFF4CAF50),
@@ -56,10 +53,10 @@ fun SharedBottomNavigationBar(selectedTab: String) {
             )
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Scanner, contentDescription = "Registrar") },
-            label = { Text("Registrar", fontSize = 10.sp) },
-            selected = selectedTab == "Registrar",
-            onClick = { /* TODO: Navigate to Registrar */ },
+            icon = { Icon(Icons.Default.PhotoCamera, contentDescription = "Scan Meal") },
+            label = { Text("Scan Meal", fontSize = 10.sp) },
+            selected = selectedTab == "Scan Meal",
+            onClick = { navController.navigate("scan_meal") },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = Color(0xFF4CAF50),
                 selectedTextColor = Color(0xFF4CAF50),
@@ -71,7 +68,7 @@ fun SharedBottomNavigationBar(selectedTab: String) {
             icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
             label = { Text("Profile", fontSize = 10.sp) },
             selected = selectedTab == "Profile",
-            onClick = { /* TODO: Navigate to Profile */ },
+            onClick = { navController.navigate("profile") },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = Color(0xFF4CAF50),
                 selectedTextColor = Color(0xFF4CAF50),
