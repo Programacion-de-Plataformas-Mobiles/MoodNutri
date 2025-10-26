@@ -14,13 +14,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScanMealScreen() {
+fun ScanMealScreen(navController: NavController) {
     Scaffold(
+        topBar = { SharedTopAppBar() },
         bottomBar = {
-            SharedBottomNavigationBar(selectedTab = "Ingredientes")
+            SharedBottomNavigationBar(navController = navController, selectedTab = "Scan Meal")
         }
     ) { paddingValues ->
         Column(
@@ -97,5 +100,5 @@ fun ScanMealScreen() {
 @Preview(showBackground = true)
 @Composable
 fun ScanMealScreenPreview() {
-    ScanMealScreen()
+    ScanMealScreen(navController = rememberNavController())
 }

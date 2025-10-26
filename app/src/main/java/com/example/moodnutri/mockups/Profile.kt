@@ -18,13 +18,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.moodnutri.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(navController: NavController) {
     Scaffold(
-        bottomBar = { SharedBottomNavigationBar(selectedTab = "Profile") }
+        topBar = { SharedTopAppBar() },
+        bottomBar = { SharedBottomNavigationBar(navController = navController, selectedTab = "Profile") }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -32,11 +35,6 @@ fun ProfileScreen() {
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            Text(
-                text = "Profile / Stats",
-                fontSize = 28.sp, // Increased
-                fontWeight = FontWeight.Bold
-            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -44,17 +42,17 @@ fun ProfileScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background), // Placeholder
+                    painter = painterResource(id = R.drawable.ic_launcher_background),
                     contentDescription = "Profile picture",
                     modifier = Modifier
-                        .size(72.dp) // Increased
+                        .size(72.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
                     text = "Sara",
-                    fontSize = 26.sp, // Increased
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -63,7 +61,7 @@ fun ProfileScreen() {
 
             Text(
                 text = "Emotional state",
-                fontSize = 22.sp, // Increased
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
 
@@ -75,20 +73,20 @@ fun ProfileScreen() {
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
-                    modifier = Modifier.padding(20.dp), // Increased
+                    modifier = Modifier.padding(20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         imageVector = Icons.Default.EmojiEmotions,
                         contentDescription = "Happy",
                         tint = Color.White,
-                        modifier = Modifier.size(28.dp) // Increased
+                        modifier = Modifier.size(28.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "Happy",
                         color = Color.White,
-                        fontSize = 20.sp // Increased
+                        fontSize = 20.sp
                     )
                 }
             }
@@ -97,7 +95,7 @@ fun ProfileScreen() {
 
             Text(
                 text = "Nutrition",
-                fontSize = 22.sp, // Increased
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
 
@@ -107,22 +105,22 @@ fun ProfileScreen() {
                 Box(contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(
                         progress = 0.75f,
-                        modifier = Modifier.size(90.dp), // Increased
-                        strokeWidth = 10.dp, // Increased
+                        modifier = Modifier.size(90.dp),
+                        strokeWidth = 10.dp,
                         color = Color(0xFF4CAF50),
                         trackColor = Color.LightGray
                     )
-                    Text(text = "2200", fontSize = 20.sp, fontWeight = FontWeight.Bold) // Increased
+                    Text(text = "2200", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "2200 kcal", fontSize = 20.sp) // Increased
+                Text(text = "2200 kcal", fontSize = 20.sp)
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
                 text = "Progress",
-                fontSize = 22.sp, // Increased
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
 
@@ -130,7 +128,7 @@ fun ProfileScreen() {
 
             LinearProgressIndicator(
                 progress = 0.6f,
-                modifier = Modifier.fillMaxWidth().height(12.dp), // Increased
+                modifier = Modifier.fillMaxWidth().height(12.dp),
                 color = Color(0xFF4CAF50),
                 trackColor = Color.LightGray
             )
@@ -142,5 +140,5 @@ fun ProfileScreen() {
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen(navController = rememberNavController())
 }
