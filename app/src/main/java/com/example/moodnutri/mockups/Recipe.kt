@@ -1,26 +1,41 @@
 package com.example.moodnutri.mockups
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.moodnutri.R
+import com.example.moodnutri.ui.GeneratedRecipeContent // Suponiendo que GeneratedRecipeContent está en el paquete ui
+import com.example.moodnutri.viewmodel.RecipeFinderState
+import com.example.moodnutri.viewmodel.RecipeFinderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecipeScreen(navController: NavController) {
+fun RecipeScreen(
+    navController: NavController,
+    ingredients: List<String>,
+    mood: String,
+    time: String,
+    viewModel: RecipeFinderViewModel = viewModel()
+) {
+    LaunchedEffect(key1 = ingredients) {
+        if (ingredients.isNotEmpty()) {
+            // Ahora usamos los valores reales que vienen de la navegación
+            viewModel.searchRecipe(ingredients, mood, time)
+        }
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+
     Scaffold(
         topBar = { SharedTopAppBar() },
         bottomBar = { SharedBottomNavigationBar(navController = navController, selectedTab = "Recipes") }
@@ -32,58 +47,28 @@ fun RecipeScreen(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_background),
-                        contentDescription = "Vegan Buddha Bowl",
-                        modifier = Modifier
-                            .height(200.dp)
-                            .fillMaxWidth(),
-                        contentScale = ContentScale.Crop
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Text(
-                        text = "Vegan Buddha Bowl",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Text(text = "1. Cook the quinoa", fontSize = 20.sp)
-                        Text(text = "2. Chop the vegetables", fontSize = 20.sp)
-                        Text(text = "3. Combine everything in bowl", fontSize = 20.sp)
+            when (val state = uiState) {
+                is RecipeFinderState.Idle -> {
+                    if (ingredients.isNotEmpty()) {
+                        // Si hay ingredientes, mostramos el loading por defecto
+                        CircularProgressIndicator()
+                        Spacer(Modifier.height(8.dp))
+                        Text("Finding the perfect recipe...")
+                    } else {
+                        Text("Select ingredients to generate a recipe.")
                     }
                 }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { /* TODO: Start cooking action */ },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-            ) {
-                Text(text = "Start cooking", color = Color.White, fontSize = 20.sp)
+                is RecipeFinderState.Loading -> {
+                    CircularProgressIndicator()
+                    Spacer(Modifier.height(8.dp))
+                    Text("Finding the perfect recipe...")
+                }
+                is RecipeFinderState.Success -> {
+                    GeneratedRecipeContent(recipe = state.recipe)
+                }
+                is RecipeFinderState.Error -> {
+                    Text(state.message, color = MaterialTheme.colorScheme.error)
+                }
             }
         }
     }
@@ -92,5 +77,5 @@ fun RecipeScreen(navController: NavController) {
 @Preview(showBackground = true)
 @Composable
 fun RecipeScreenPreview() {
-    RecipeScreen(navController = rememberNavController())
+    RecipeScreen(navController = rememberNavController(), ingredients = emptyList(), mood = "Happy", time = "30 min")
 }
