@@ -1,40 +1,80 @@
 package com.example.moodnutri.data
 
+import com.example.moodnutri.data.models.openAi.GeneratedRecipe
 import com.example.moodnutri.data.models.theMealDb.MealDetails
-import com.example.moodnutri.data.network.RetrofitInstance
+import com.example.moodnutri.data.network.TheMealDbApiService
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-// El repositorio es una capa de abstracción que se encarga de la lógica de obtención de datos.
-class RecipeRepository {
+class RecipeRepository @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+    private val firebaseDatabase: FirebaseDatabase,
+    private val theMealDbApi: TheMealDbApiService
+) {
 
-    private val mealDbService = RetrofitInstance.mealDbApi
+    private val currentUser by lazy { firebaseAuth.currentUser }
 
-    /**
-     * Busca recetas en TheMealDB que contengan CUALQUIERA de los ingredientes proporcionados.
-     * @param ingredients Lista de ingredientes que el usuario tiene.
-     * @return Una lista de recetas completas (MealDetails), sin duplicados.
-     */
     suspend fun findRecipesByIngredients(ingredients: List<String>): List<MealDetails> = withContext(Dispatchers.IO) {
-        if (ingredients.isEmpty()) return@withContext emptyList()
+        // First, gather all unique recipe summaries from all ingredients
+        val uniqueSummaries = ingredients
+            .mapNotNull { ingredient ->
+                try {
+                    theMealDbApi.searchByIngredient(ingredient).meals
+                } catch (e: Exception) {
+                    null // Safely ignore failures for single ingredient searches
+                }
+            }
+            .flatten()
+            .distinctBy { it.idMeal }
 
-        // 1. Para cada ingrediente, busca las recetas que lo contienen.
-        //    Esto se hace en paralelo para mayor eficiencia.
-        val mealSummaries = ingredients.map {
-            async { mealDbService.searchByIngredient(it).meals ?: emptyList() }
-        }.awaitAll().flatten()
+        // Now, for each unique summary, fetch its full details
+        uniqueSummaries.mapNotNull { summary ->
+            try {
+                theMealDbApi.getMealDetails(summary.idMeal).meals?.firstOrNull()
+            } catch (e: Exception) {
+                null // Safely ignore failures for single detail fetches
+            }
+        }
+    }
 
-        // 2. Obtenemos una lista de IDs de recetas, eliminando duplicados.
-        val uniqueMealIds = mealSummaries.map { it.idMeal }.distinct()
+    fun saveRecipe(recipe: GeneratedRecipe) {
+        currentUser?.uid?.let { userId ->
+            val databaseReference = firebaseDatabase.getReference("users").child(userId).child("recipes")
+            databaseReference.child(recipe.name).setValue(recipe)
+        }
+    }
 
-        // 3. Para cada ID único, obtenemos los detalles completos de la receta.
-        //    Esto también se hace en paralelo.
-        val mealDetailsList = uniqueMealIds.map {
-            async { mealDbService.getMealDetails(it).meals?.firstOrNull() }
-        }.awaitAll().filterNotNull()
+    fun saveFavorite(recipe: GeneratedRecipe) {
+        currentUser?.uid?.let { userId ->
+            val databaseReference = firebaseDatabase.getReference("users").child(userId).child("favorites")
+            databaseReference.child(recipe.name).setValue(recipe)
+        }
+    }
 
-        return@withContext mealDetailsList
+    fun removeFavorite(recipeName: String) {
+        currentUser?.uid?.let { userId ->
+            val databaseReference = firebaseDatabase.getReference("users").child(userId).child("favorites")
+            databaseReference.child(recipeName).removeValue()
+        }
+    }
+
+    // MÉTODO NUEVO AÑADIDO: Guardar últimas 10 recetas en Firebase
+    suspend fun saveRecentRecipe(recipe: GeneratedRecipe) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val ref = firebaseDatabase.getReference("users/$userId/recent_recipes")
+
+        // Obtener actuales
+        val snapshot = ref.get().await()
+        val current = snapshot.children.mapNotNull { it.getValue(GeneratedRecipe::class.java) }.toMutableList()
+
+        // Añadir nueva
+        current.add(0, recipe) // nueva primera
+
+        // Mantener solo 10 y guardar
+        ref.setValue(current.take(10)).await()
     }
 }
