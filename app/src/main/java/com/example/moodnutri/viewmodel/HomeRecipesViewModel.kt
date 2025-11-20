@@ -32,21 +32,21 @@ class HomeRecipesViewModel : ViewModel() {
             _errorMessage.value = null
 
             try {
-                Log.d("HomeRecipesVM", "🔄 Calling firebaseRepository.getSavedRecipes()...")
+                Log.d("HomeRecipesVM", " Calling firebaseRepository.getSavedRecipes()...")
                 val result = firebaseRepository.getSavedRecipes()
 
                 result.onSuccess { recipes ->
-                    Log.d("HomeRecipesVM", "✅✅✅ SUCCESS! Received ${recipes.size} recipes from Firebase")
+                    Log.d("HomeRecipesVM", " SUCCESS! Received ${recipes.size} recipes from Firebase")
 
                     if (recipes.isEmpty()) {
-                        Log.w("HomeRecipesVM", "⚠️⚠️⚠️ WARNING: Recipe list is EMPTY!")
+                        Log.w("HomeRecipesVM", " WARNING: Recipe list is EMPTY!")
                         Log.w("HomeRecipesVM", "Possible reasons:")
                         Log.w("HomeRecipesVM", "1. No recipes have been saved yet")
                         Log.w("HomeRecipesVM", "2. All recipes are marked as favorites (isFavorite=true)")
                         Log.w("HomeRecipesVM", "3. Firebase query is not finding the documents")
                         _errorMessage.value = "No saved recipes found"
                     } else {
-                        Log.d("HomeRecipesVM", "📋 Recipe list:")
+                        Log.d("HomeRecipesVM", " Recipe list:")
                         recipes.forEachIndexed { index, recipe ->
                             Log.d("HomeRecipesVM", "  ${index + 1}. ${recipe.name}")
                             Log.d("HomeRecipesVM", "     - ID: ${recipe.id}")
@@ -57,10 +57,10 @@ class HomeRecipesViewModel : ViewModel() {
                     }
 
                     _savedRecipes.value = recipes
-                    Log.d("HomeRecipesVM", "✅ State updated: _savedRecipes.value has ${_savedRecipes.value.size} recipes")
+                    Log.d("HomeRecipesVM", " State updated: _savedRecipes.value has ${_savedRecipes.value.size} recipes")
 
                 }.onFailure { error ->
-                    Log.e("HomeRecipesVM", "❌❌❌ FAILURE! Error loading recipes")
+                    Log.e("HomeRecipesVM", " FAILURE! Error loading recipes")
                     Log.e("HomeRecipesVM", "Error message: ${error.message}")
                     Log.e("HomeRecipesVM", "Error type: ${error.javaClass.simpleName}")
                     error.printStackTrace()
@@ -69,7 +69,7 @@ class HomeRecipesViewModel : ViewModel() {
                 }
 
             } catch (e: Exception) {
-                Log.e("HomeRecipesVM", "❌❌❌ EXCEPTION in loadSavedRecipes()")
+                Log.e("HomeRecipesVM", " EXCEPTION in loadSavedRecipes()")
                 Log.e("HomeRecipesVM", "Exception message: ${e.message}")
                 Log.e("HomeRecipesVM", "Exception type: ${e.javaClass.simpleName}")
                 e.printStackTrace()
@@ -77,8 +77,8 @@ class HomeRecipesViewModel : ViewModel() {
                 _savedRecipes.value = emptyList()
             } finally {
                 _isLoading.value = false
-                Log.d("HomeRecipesVM", "🏁 Loading finished. isLoading = false")
-                Log.d("HomeRecipesVM", "📊 Final state:")
+                Log.d("HomeRecipesVM", " Loading finished. isLoading = false")
+                Log.d("HomeRecipesVM", " Final state:")
                 Log.d("HomeRecipesVM", "   - savedRecipes count: ${_savedRecipes.value.size}")
                 Log.d("HomeRecipesVM", "   - isLoading: ${_isLoading.value}")
                 Log.d("HomeRecipesVM", "   - errorMessage: ${_errorMessage.value}")

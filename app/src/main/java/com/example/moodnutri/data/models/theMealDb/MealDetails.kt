@@ -3,7 +3,7 @@ package com.example.moodnutri.data.models.theMealDb
 import com.google.gson.annotations.SerializedName
 
 // Modelo completo que captura todos los detalles de una receta de TheMealDB.
-// Los campos @SerializedName son necesarios si el nombre del campo en el JSON no coincide con el nombre de la variable.
+
 data class MealDetails(
     val idMeal: String,
     val strMeal: String?,
@@ -16,7 +16,6 @@ data class MealDetails(
     val strSource: String?,
 
     // TheMealDB tiene hasta 20 ingredientes y medidas en campos separados.
-    // Los parsearemos más tarde para convertirlos en una lista limpia.
     val strIngredient1: String?, val strIngredient2: String?, val strIngredient3: String?,
     val strIngredient4: String?, val strIngredient5: String?, val strIngredient6: String?,
     val strIngredient7: String?, val strIngredient8: String?, val strIngredient9: String?,
@@ -35,8 +34,10 @@ data class MealDetails(
 ) {
     /**
      * Función de utilidad para convertir los 20 campos de ingredientes y medidas
-     * en una lista legible de strings.
+     * en una lista legible de strings
      */
+
+
     fun getIngredientsWithMeasures(): List<String> {
         val ingredients = mutableListOf<String>()
         val allIngredients = listOfNotNull(

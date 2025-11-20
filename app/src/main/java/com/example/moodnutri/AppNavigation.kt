@@ -61,7 +61,6 @@ fun AppNavigation() {
             RecipeScreen(navController = navController, viewModel = recipeFinderViewModel)
         }
 
-        // Nueva ruta para mostrar receta guardada
         composable(
             route = "recipe_detail/{recipeId}",
             arguments = listOf(navArgument("recipeId") {

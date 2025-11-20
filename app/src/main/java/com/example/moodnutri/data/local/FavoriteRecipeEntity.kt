@@ -8,8 +8,8 @@ data class FavoriteRecipeEntity(
     @PrimaryKey val id: String,
     val name: String,
     val time: String,
-    val ingredients: String, // JSON string
-    val steps: String, // JSON string
+    val ingredients: String,
+    val steps: String,
     val imageUrl: String,
     val reason: String,
     val timestamp: Long = System.currentTimeMillis()

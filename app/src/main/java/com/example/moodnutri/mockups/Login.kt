@@ -38,7 +38,6 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
         isEmailError = !Patterns.EMAIL_ADDRESS.matcher(text).matches()
     }
 
-    // Observar cambios en el estado de autenticación
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
@@ -129,7 +128,6 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel = vie
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Mostrar errores de autenticación
             if (authState is AuthState.Error) {
                 Text(
                     text = (authState as AuthState.Error).message,

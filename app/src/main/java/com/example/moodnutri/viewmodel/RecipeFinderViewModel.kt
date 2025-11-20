@@ -79,34 +79,34 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                Log.d("RecipeFinderVM", "🔍 INICIANDO BÚSQUEDA DE RECETAS...")
-                Log.d("RecipeFinderVM", "📋 Ingredientes originales: $userIngredients")
+                Log.d("RecipeFinderVM", " INICIANDO BÚSQUEDA DE RECETAS...")
+                Log.d("RecipeFinderVM", " Ingredientes originales: $userIngredients")
 
                 // Primero traducir los ingredientes a inglés usando ChatGPT
                 val englishIngredients = translateIngredientsToEnglish(userIngredients)
 
                 if (englishIngredients.isNotEmpty()) {
-                    Log.d("RecipeFinderVM", "🌐 Ingredientes traducidos: $englishIngredients")
+                    Log.d("RecipeFinderVM", " Ingredientes traducidos: $englishIngredients")
 
                     // Buscar recetas reales en MealDB con ingredientes en inglés
-                    Log.d("RecipeFinderVM", "🔄 Buscando recetas en MealDB con ingredientes en inglés...")
+                    Log.d("RecipeFinderVM", " Buscando recetas en MealDB con ingredientes en inglés...")
                     val realRecipes = recipeRepository.findRecipesByIngredients(englishIngredients)
 
                     if (realRecipes.isNotEmpty()) {
-                        Log.d("RecipeFinderVM", "✅ ENCONTRADAS ${realRecipes.size} recetas en MealDB")
+                        Log.d("RecipeFinderVM", " ENCONTRADAS ${realRecipes.size} recetas en MealDB")
                         // Si encontramos recetas reales, generar la receta final
                         generateRecipeWithRealRecipes(userIngredients, englishIngredients, mood, availableTime, realRecipes)
                     } else {
-                        Log.d("RecipeFinderVM", "❌ NO se encontraron recetas en MealDB")
+                        Log.d("RecipeFinderVM", " NO se encontraron recetas en MealDB")
                         _uiState.value = RecipeFinderState.Error("No recipes found with your ingredients. Please try different ingredients.")
                     }
                 } else {
-                    Log.d("RecipeFinderVM", "❌ Error traduciendo ingredientes")
+                    Log.d("RecipeFinderVM", " Error traduciendo ingredientes")
                     _uiState.value = RecipeFinderState.Error("Error processing ingredients. Please try again.")
                 }
 
             } catch (e: Exception) {
-                Log.e("RecipeFinderVM", "❌ Error en búsqueda principal", e)
+                Log.e("RecipeFinderVM", " Error en búsqueda principal", e)
                 _uiState.value = RecipeFinderState.Error("Error searching for recipes. Please check your connection and try again.")
             }
         }
@@ -114,7 +114,7 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
 
     private suspend fun translateIngredientsToEnglish(ingredients: List<String>): List<String> {
         return try {
-            Log.d("RecipeFinderVM", "🤖 Traduciendo ingredientes a inglés con ChatGPT...")
+            Log.d("RecipeFinderVM", " Traduciendo ingredientes a inglés con ChatGPT...")
 
             val prompt = """
                 Translate the following list of food ingredients to English. 
@@ -143,7 +143,7 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
             val jsonResponse = chatResponse.choices.firstOrNull()?.message?.content
 
             if (jsonResponse.isNullOrBlank()) {
-                Log.e("RecipeFinderVM", "❌ Respuesta vacía en traducción")
+                Log.e("RecipeFinderVM", " Respuesta vacía en traducción")
                 return emptyList()
             }
 
@@ -157,11 +157,11 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
             Log.d("RecipeFinderVM", "📨 Respuesta de traducción: $cleanJsonResponse")
 
             val translatedIngredients = Gson().fromJson(cleanJsonResponse, Array<String>::class.java).toList()
-            Log.d("RecipeFinderVM", "✅ Ingredientes traducidos exitosamente")
+            Log.d("RecipeFinderVM", " Ingredientes traducidos exitosamente")
             translatedIngredients
 
         } catch (e: Exception) {
-            Log.e("RecipeFinderVM", "❌ Error en traducción", e)
+            Log.e("RecipeFinderVM", " Error en traducción", e)
             emptyList()
         }
     }
@@ -182,8 +182,8 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
                 else -> "English"
             }
 
-            Log.d("RecipeFinderVM", "🌍 Idioma seleccionado: $languageName")
-            Log.d("RecipeFinderVM", "📊 Procesando ${realRecipes.size} recetas reales")
+            Log.d("RecipeFinderVM", " Idioma seleccionado: $languageName")
+            Log.d("RecipeFinderVM", " Procesando ${realRecipes.size} recetas reales")
 
             // Convertir recetas reales a texto para el prompt
             val recipesAsText = realRecipes.joinToString("\n---\n") { recipe ->
@@ -195,7 +195,7 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
                         "Ingredients: ${recipe.getIngredientsWithMeasures().joinToString()}"
             }
 
-            Log.d("RecipeFinderVM", "📨 Enviando prompt a ChatGPT para generar receta...")
+            Log.d("RecipeFinderVM", " Enviando prompt a ChatGPT para generar receta...")
 
             val prompt = """
                 User's context:
@@ -246,27 +246,27 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
             val jsonResponse = chatResponse.choices.firstOrNull()?.message?.content
 
             if (jsonResponse.isNullOrBlank()) {
-                Log.w("RecipeFinderVM", "⚠️ Respuesta vacía de ChatGPT")
+                Log.w("RecipeFinderVM", " Respuesta vacía de ChatGPT")
                 _uiState.value = RecipeFinderState.Error("No response from AI. Please try again.")
                 return
             }
 
-            Log.d("RecipeFinderVM", "✅ Respuesta recibida de ChatGPT")
+            Log.d("RecipeFinderVM", " Respuesta recibida de ChatGPT")
             val cleanJsonResponse = cleanJsonResponse(jsonResponse)
             val recipe = Gson().fromJson(cleanJsonResponse, GeneratedRecipe::class.java)
             val recipeId = generateRecipeId(recipe)
 
-            Log.d("RecipeFinderVM", "🎉 RECETA CREADA CON MEALDB")
-            Log.d("RecipeFinderVM", "📛 Nombre: ${recipe.name}")
-            Log.d("RecipeFinderVM", "⏱️ Tiempo: ${recipe.time}")
-            Log.d("RecipeFinderVM", "🖼️ Imagen: ${recipe.image_url}")
+            Log.d("RecipeFinderVM", " RECETA CREADA CON MEALDB")
+            Log.d("RecipeFinderVM", " Nombre: ${recipe.name}")
+            Log.d("RecipeFinderVM", "️ Tiempo: ${recipe.time}")
+            Log.d("RecipeFinderVM", " Imagen: ${recipe.image_url}")
 
             _uiState.value = RecipeFinderState.Success(recipe, recipeId)
             checkIfFavorite(recipeId)
             checkIfSaved(recipeId)
 
         } catch (e: Exception) {
-            Log.e("RecipeFinderVM", "❌ Error generando receta", e)
+            Log.e("RecipeFinderVM", " Error generando receta", e)
             _uiState.value = RecipeFinderState.Error("Error generating recipe. Please try again.")
         }
     }
@@ -291,7 +291,7 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
             val isFirebaseFavorite = firebaseRepository.isFavorite(recipeId)
             val isLocalFavorite = localRepository.isFavorite(recipeId)
             _isFavorite.value = isFirebaseFavorite || isLocalFavorite
-            Log.d("RecipeFinderVM", "✅ Favorite status checked - Firebase: $isFirebaseFavorite, Local: $isLocalFavorite")
+            Log.d("RecipeFinderVM", " Favorite status checked - Firebase: $isFirebaseFavorite, Local: $isLocalFavorite")
         } catch (e: Exception) {
             Log.e("RecipeFinderVM", "Error checking favorite status", e)
             _isFavorite.value = false
@@ -302,7 +302,7 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
         try {
             val allRecipes = firebaseRepository.getAllRecipes()
             _isSaved.value = allRecipes.getOrNull()?.any { it.id == recipeId } == true
-            Log.d("RecipeFinderVM", "✅ Saved status checked: ${_isSaved.value}")
+            Log.d("RecipeFinderVM", " Saved status checked: ${_isSaved.value}")
         } catch (e: Exception) {
             Log.e("RecipeFinderVM", "Error checking saved status", e)
             _isSaved.value = false
@@ -348,13 +348,13 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
 
                 if (result.isSuccess) {
                     _isSaved.value = true
-                    Log.d("RecipeFinderVM", "✅ Recipe saved successfully! isSaved = true")
+                    Log.d("RecipeFinderVM", " Recipe saved successfully! isSaved = true")
                 } else {
-                    Log.e("RecipeFinderVM", "❌ Error saving recipe: ${result.exceptionOrNull()}")
+                    Log.e("RecipeFinderVM", " Error saving recipe: ${result.exceptionOrNull()}")
                 }
 
             } catch (e: Exception) {
-                Log.e("RecipeFinderVM", "❌ Exception saving recipe", e)
+                Log.e("RecipeFinderVM", " Exception saving recipe", e)
             } finally {
                 _saveInProgress.value = false
                 Log.d("RecipeFinderVM", "Save operation completed. saveInProgress = false")
@@ -397,21 +397,21 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
                         Log.d("RecipeFinderVM", "Agregando a favoritos locales (Room)...")
                         localRepository.addToFavorites(recipe, recipeId)
                         _isSaved.value = true
-                        Log.d("RecipeFinderVM", "✅ Receta agregada a favoritos locales")
+                        Log.d("RecipeFinderVM", " Receta agregada a favoritos locales")
                     } else {
                         // Si se quitó de favoritos, remover de Room
                         Log.d("RecipeFinderVM", "Removiendo de favoritos locales (Room)...")
                         localRepository.removeFromFavorites(recipeId)
-                        Log.d("RecipeFinderVM", "✅ Receta removida de favoritos locales")
+                        Log.d("RecipeFinderVM", " Receta removida de favoritos locales")
                     }
 
                     _isFavorite.value = newFavoriteStatus
-                    Log.d("RecipeFinderVM", "✅ Toggle favorite successful")
+                    Log.d("RecipeFinderVM", " Toggle favorite successful")
                 } else {
-                    Log.e("RecipeFinderVM", "❌ Error toggling favorite in Firebase")
+                    Log.e("RecipeFinderVM", " Error toggling favorite in Firebase")
                 }
             } catch (e: Exception) {
-                Log.e("RecipeFinderVM", "❌ Error toggling favorite", e)
+                Log.e("RecipeFinderVM", " Error toggling favorite", e)
             } finally {
                 _favoriteInProgress.value = false
             }
@@ -423,9 +423,9 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
             try {
                 val nutritionRepo = NutritionRepository()
                 nutritionRepo.addMealToToday(recipeId, calories, protein, carbs)
-                Log.d("RecipeFinderVM", "✅ Meal added to today: $calories cal, $protein g protein, $carbs g carbs")
+                Log.d("RecipeFinderVM", " Meal added to today: $calories cal, $protein g protein, $carbs g carbs")
             } catch (e: Exception) {
-                Log.e("RecipeFinderVM", "❌ Error adding meal to today", e)
+                Log.e("RecipeFinderVM", " Error adding meal to today", e)
             }
         }
     }

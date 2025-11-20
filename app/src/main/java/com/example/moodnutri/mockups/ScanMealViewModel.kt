@@ -190,11 +190,11 @@ class ScanMealViewModel(application: Application) : AndroidViewModel(application
                     )
 
                     if (result.isSuccess) {
-                        android.util.Log.d("ScanMealVM", "✅ Meal added to today successfully")
+                        android.util.Log.d("ScanMealVM", " Meal added to today successfully")
                     }
                 }
             } catch (e: Exception) {
-                android.util.Log.e("ScanMealVM", "❌ Error adding meal to today", e)
+                android.util.Log.e("ScanMealVM", " Error adding meal to today", e)
             }
         }
     }

@@ -42,7 +42,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
             launch {
                 localRepository.getAllFavorites().collect { locals ->
                     _localFavorites.value = locals
-                    Log.d("FavoritesVM", "✅ Local favorites loaded: ${locals.size} recipes")
+                    Log.d("FavoritesVM", " Local favorites loaded: ${locals.size} recipes")
                     locals.forEach { recipe ->
                         Log.d("FavoritesVM", "  - ${recipe.name}")
                     }
@@ -54,12 +54,12 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 val result = firebaseRepository.getFavoriteRecipes()
                 result.onSuccess { recipes ->
                     _firebaseFavorites.value = recipes
-                    Log.d("FavoritesVM", "✅ Firebase favorites loaded: ${recipes.size} recipes")
+                    Log.d("FavoritesVM", " Firebase favorites loaded: ${recipes.size} recipes")
                     recipes.forEach { recipe ->
                         Log.d("FavoritesVM", "  - ${recipe.name} (isFavorite: ${recipe.isFavorite})")
                     }
                 }.onFailure { error ->
-                    Log.e("FavoritesVM", "❌ Error loading Firebase favorites", error)
+                    Log.e("FavoritesVM", " Error loading Firebase favorites", error)
                 }
             }
 

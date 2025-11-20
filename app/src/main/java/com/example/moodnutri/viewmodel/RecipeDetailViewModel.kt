@@ -85,22 +85,22 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
                             reason = currentRecipe.reason
                         )
                         localRepository.addToFavorites(generatedRecipe, currentRecipe.id)
-                        Log.d("RecipeDetailVM", "✅ Receta agregada a favoritos locales")
+                        Log.d("RecipeDetailVM", " Receta agregada a favoritos locales")
                     } else {
                         // Si se quitó de favoritos, remover de Room
                         Log.d("RecipeDetailVM", "Removiendo de favoritos locales (Room)...")
                         localRepository.removeFromFavorites(currentRecipe.id)
-                        Log.d("RecipeDetailVM", "✅ Receta removida de favoritos locales")
+                        Log.d("RecipeDetailVM", " Receta removida de favoritos locales")
                     }
 
                     _isFavorite.value = newFavoriteStatus
                     _recipe.value = currentRecipe.copy(isFavorite = newFavoriteStatus)
-                    Log.d("RecipeDetailVM", "✅ Toggle favorite successful")
+                    Log.d("RecipeDetailVM", " Toggle favorite successful")
                 } else {
-                    Log.e("RecipeDetailVM", "❌ Error toggling favorite in Firebase")
+                    Log.e("RecipeDetailVM", " Error toggling favorite in Firebase")
                 }
             } catch (e: Exception) {
-                Log.e("RecipeDetailVM", "❌ Error toggling favorite", e)
+                Log.e("RecipeDetailVM", " Error toggling favorite", e)
             } finally {
                 _favoriteInProgress.value = false
             }

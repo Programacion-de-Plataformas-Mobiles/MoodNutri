@@ -32,14 +32,14 @@ class FirebaseRecipeRepository {
             Log.d("FirebaseRepo", "isFavorite: ${recipe.isFavorite}")
 
             if (userId == null) {
-                Log.e("FirebaseRepo", "❌ User not authenticated")
+                Log.e("FirebaseRepo", " User not authenticated")
                 return Result.failure(Exception("User not authenticated"))
             }
 
             val collection = getUserRecipesCollection()
                 ?: return Result.failure(Exception("User not authenticated"))
 
-            Log.d("FirebaseRepo", "📍 Firebase path: users/$userId/recipes/${recipe.id}")
+            Log.d("FirebaseRepo", " Firebase path: users/$userId/recipes/${recipe.id}")
 
             // Primero verificar si ya existe
             val existingDoc = collection.document(recipe.id).get().await()
@@ -54,7 +54,7 @@ class FirebaseRecipeRepository {
                         "isFavorite" to recipe.isFavorite
                     )
                 ).await()
-                Log.d("FirebaseRepo", "✅ Recipe updated: ${recipe.name}")
+                Log.d("FirebaseRepo", " Recipe updated: ${recipe.name}")
             } else {
                 // Es una receta nueva - obtener todas las recetas saved
                 Log.d("FirebaseRepo", "Document doesn't exist, checking saved count...")
@@ -72,9 +72,9 @@ class FirebaseRecipeRepository {
                 // Si ya hay 10, eliminar la más antigua
                 if (savedRecipes.size >= 10) {
                     val oldestRecipe = savedRecipes.first()
-                    Log.d("FirebaseRepo", "⚠️ Limit reached, deleting oldest: ${oldestRecipe.name}")
+                    Log.d("FirebaseRepo", "Limit reached, deleting oldest: ${oldestRecipe.name}")
                     collection.document(oldestRecipe.id).delete().await()
-                    Log.d("FirebaseRepo", "✅ Deleted oldest recipe")
+                    Log.d("FirebaseRepo", " Deleted oldest recipe")
                 }
 
                 // Guardar la nueva receta
@@ -88,22 +88,22 @@ class FirebaseRecipeRepository {
                 Log.d("FirebaseRepo", "Recipe data: name=${recipeWithUser.name}, userId=${recipeWithUser.userId}, isFavorite=${recipeWithUser.isFavorite}")
 
                 collection.document(recipe.id).set(recipeWithUser).await()
-                Log.d("FirebaseRepo", "✅✅✅ Recipe saved successfully: ${recipe.name}")
+                Log.d("FirebaseRepo", " Recipe saved successfully: ${recipe.name}")
 
                 // Verificar que se guardó correctamente
                 val verifyDoc = collection.document(recipe.id).get().await()
                 if (verifyDoc.exists()) {
-                    Log.d("FirebaseRepo", "✅ VERIFICATION: Recipe exists in Firebase")
+                    Log.d("FirebaseRepo", " VERIFICATION: Recipe exists in Firebase")
                     val verifyRecipe = verifyDoc.toObject(FirebaseRecipe::class.java)
-                    Log.d("FirebaseRepo", "✅ VERIFICATION: Recipe name: ${verifyRecipe?.name}")
+                    Log.d("FirebaseRepo", " VERIFICATION: Recipe name: ${verifyRecipe?.name}")
                 } else {
-                    Log.e("FirebaseRepo", "❌ VERIFICATION FAILED: Recipe NOT found in Firebase")
+                    Log.e("FirebaseRepo", " VERIFICATION FAILED: Recipe NOT found in Firebase")
                 }
             }
 
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.e("FirebaseRepo", "❌❌❌ Error saving recipe: ${e.message}", e)
+            Log.e("FirebaseRepo", " Error saving recipe: ${e.message}", e)
             e.printStackTrace()
             Result.failure(e)
         }
@@ -137,7 +137,7 @@ class FirebaseRecipeRepository {
             if (isFavorite) {
                 // Agregar a favoritos
                 collection.document(recipe.id).set(recipeWithUser).await()
-                Log.d("FirebaseRepo", "✅ Added to favorites: ${recipe.name}")
+                Log.d("FirebaseRepo", " Added to favorites: ${recipe.name}")
             } else {
                 // Verificar si existe como saved
                 val doc = collection.document(recipe.id).get().await()
@@ -154,7 +154,7 @@ class FirebaseRecipeRepository {
 
             Result.success(Unit)
         } catch (e: Exception) {
-            Log.e("FirebaseRepo", "❌ Error toggling favorite: ${e.message}", e)
+            Log.e("FirebaseRepo", " Error toggling favorite: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -169,18 +169,18 @@ class FirebaseRecipeRepository {
             Log.d("FirebaseRepo", "User ID: $userId")
 
             if (userId == null) {
-                Log.e("FirebaseRepo", "❌ User not authenticated")
+                Log.e("FirebaseRepo", " User not authenticated")
                 return Result.failure(Exception("User not authenticated"))
             }
 
             val collection = getUserRecipesCollection()
                 ?: return Result.failure(Exception("User not authenticated"))
 
-            Log.d("FirebaseRepo", "📍 Firebase path: users/$userId/recipes")
+            Log.d("FirebaseRepo", " Firebase path: users/$userId/recipes")
 
             val snapshot = collection.get().await()
 
-            Log.d("FirebaseRepo", "📦 Snapshot size: ${snapshot.documents.size}")
+            Log.d("FirebaseRepo", " Snapshot size: ${snapshot.documents.size}")
 
             val recipes = snapshot.documents
                 .mapNotNull {
@@ -190,14 +190,14 @@ class FirebaseRecipeRepository {
                 }
                 .sortedByDescending { it.timestamp }
 
-            Log.d("FirebaseRepo", "✅ Retrieved ${recipes.size} total recipes")
+            Log.d("FirebaseRepo", " Retrieved ${recipes.size} total recipes")
             recipes.forEach {
                 Log.d("FirebaseRepo", "  - ${it.name} (isFavorite: ${it.isFavorite}, timestamp: ${it.timestamp})")
             }
 
             Result.success(recipes)
         } catch (e: Exception) {
-            Log.e("FirebaseRepo", "❌❌❌ Error getting all recipes: ${e.message}", e)
+            Log.e("FirebaseRepo", " Error getting all recipes: ${e.message}", e)
             e.printStackTrace()
             Result.failure(e)
         }
@@ -213,15 +213,15 @@ class FirebaseRecipeRepository {
             Log.d("FirebaseRepo", "User ID: $userId")
 
             if (userId == null) {
-                Log.e("FirebaseRepo", "❌ User not authenticated")
+                Log.e("FirebaseRepo", " User not authenticated")
                 return Result.failure(Exception("User not authenticated"))
             }
 
             val collection = getUserRecipesCollection()
                 ?: return Result.failure(Exception("User not authenticated"))
 
-            Log.d("FirebaseRepo", "📍 Firebase path: users/$userId/recipes")
-            Log.d("FirebaseRepo", "🔍 Filtering by: isFavorite = false")
+            Log.d("FirebaseRepo", " Firebase path: users/$userId/recipes")
+            Log.d("FirebaseRepo", " Filtering by: isFavorite = false")
 
             // Query simple sin orderBy
             val snapshot = collection
@@ -229,13 +229,13 @@ class FirebaseRecipeRepository {
                 .get()
                 .await()
 
-            Log.d("FirebaseRepo", "📦 Snapshot size: ${snapshot.documents.size}")
+            Log.d("FirebaseRepo", "Snapshot size: ${snapshot.documents.size}")
 
             // Ordenar manualmente en el código
             val recipes = snapshot.documents
                 .mapNotNull { doc ->
                     val recipe = doc.toObject(FirebaseRecipe::class.java)
-                    Log.d("FirebaseRepo", "  📄 Document ID: ${doc.id}")
+                    Log.d("FirebaseRepo", "   Document ID: ${doc.id}")
                     Log.d("FirebaseRepo", "     Name: ${recipe?.name}")
                     Log.d("FirebaseRepo", "     isFavorite: ${recipe?.isFavorite}")
                     Log.d("FirebaseRepo", "     timestamp: ${recipe?.timestamp}")
@@ -245,13 +245,13 @@ class FirebaseRecipeRepository {
                 .sortedByDescending { it.timestamp }
                 .take(10)
 
-            Log.d("FirebaseRepo", "✅✅✅ Retrieved ${recipes.size} saved recipes")
+            Log.d("FirebaseRepo", "Retrieved ${recipes.size} saved recipes")
             recipes.forEachIndexed { index, recipe ->
                 Log.d("FirebaseRepo", "  ${index + 1}. ${recipe.name} (isFavorite: ${recipe.isFavorite})")
             }
 
             if (recipes.isEmpty()) {
-                Log.w("FirebaseRepo", "⚠️⚠️⚠️ NO SAVED RECIPES FOUND!")
+                Log.w("FirebaseRepo", "⚠ NO SAVED RECIPES FOUND!")
                 Log.w("FirebaseRepo", "Please check:")
                 Log.w("FirebaseRepo", "1. Are you logged in? User ID: $userId")
                 Log.w("FirebaseRepo", "2. Have you saved any recipes?")
@@ -260,7 +260,7 @@ class FirebaseRecipeRepository {
 
             Result.success(recipes)
         } catch (e: Exception) {
-            Log.e("FirebaseRepo", "❌❌❌ Error getting saved recipes: ${e.message}", e)
+            Log.e("FirebaseRepo", " Error getting saved recipes: ${e.message}", e)
             e.printStackTrace()
             Result.failure(e)
         }
@@ -293,11 +293,11 @@ class FirebaseRecipeRepository {
                 .mapNotNull { it.toObject(FirebaseRecipe::class.java) }
                 .sortedByDescending { it.timestamp }
 
-            Log.d("FirebaseRepo", "✅ Retrieved ${recipes.size} favorite recipes")
+            Log.d("FirebaseRepo", "Retrieved ${recipes.size} favorite recipes")
 
             Result.success(recipes)
         } catch (e: Exception) {
-            Log.e("FirebaseRepo", "❌ Error getting favorite recipes: ${e.message}", e)
+            Log.e("FirebaseRepo", " Error getting favorite recipes: ${e.message}", e)
             Result.failure(e)
         }
     }

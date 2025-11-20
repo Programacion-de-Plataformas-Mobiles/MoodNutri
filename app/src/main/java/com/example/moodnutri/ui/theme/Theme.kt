@@ -16,7 +16,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Colores personalizados para modo claro
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFF4CAF50),
     onPrimary = Color.White,

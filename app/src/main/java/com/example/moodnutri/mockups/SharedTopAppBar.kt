@@ -36,12 +36,12 @@ fun SharedTopAppBar() {
                     text = "MoodNutri",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface // Cambiado para adaptarse al tema
+                    color = MaterialTheme.colorScheme.onSurface //  para adaptarse al tema
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface // Cambiado de Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         )
     )
 }

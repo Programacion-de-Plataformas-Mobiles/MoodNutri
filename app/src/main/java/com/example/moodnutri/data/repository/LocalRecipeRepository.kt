@@ -16,7 +16,7 @@ class LocalRecipeRepository(private val dao: FavoriteRecipeDao) {
         // Verificar si ya hay 5 favoritos
         val count = dao.getFavoriteCount()
         if (count >= 5) {
-            // Eliminar el más antiguo
+            // Eliminar el más antiguo para mantener 5 favoritos solamente
             dao.deleteOldestIfExceedsLimit()
         }
 

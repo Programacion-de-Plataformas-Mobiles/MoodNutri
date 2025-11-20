@@ -371,7 +371,7 @@ fun FirebaseFavoriteRecipeCard(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    // Tiempo
+
                     Column {
                         Text(
                             text = stringResource(R.string.time_label),
