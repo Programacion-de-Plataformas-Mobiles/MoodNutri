@@ -4,10 +4,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.moodnutri.R
 
 @Composable
 fun SharedBottomNavigationBar(
@@ -15,7 +16,7 @@ fun SharedBottomNavigationBar(
     selectedTab: String
 ) {
     NavigationBar(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
     ) {
         val navigateToScreen = { route: String ->
             navController.navigate(route) {
@@ -28,71 +29,73 @@ fun SharedBottomNavigationBar(
         }
 
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-            label = { Text("Home", fontSize = 10.sp) },
+            icon = { Icon(Icons.Default.Home, contentDescription = stringResource(R.string.nav_home)) },
+            label = { Text(stringResource(R.string.nav_home), fontSize = 10.sp) },
             selected = selectedTab == "Home",
             onClick = { navigateToScreen("home") },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                indicatorColor = MaterialTheme.colorScheme.primaryContainer
             )
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Fastfood, contentDescription = "Ingredients") },
-            label = { Text("Ingredients", fontSize = 10.sp) },
+            icon = { Icon(Icons.Default.Fastfood, contentDescription = stringResource(R.string.nav_ingredients)) },
+            label = { Text(stringResource(R.string.nav_ingredients), fontSize = 10.sp) },
             selected = selectedTab == "Ingredients",
             onClick = { navigateToScreen("scan_ingredients") },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                indicatorColor = MaterialTheme.colorScheme.primaryContainer
             )
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Restaurant, contentDescription = "Recipes") },
-            label = { Text("Recipes", fontSize = 10.sp) },
+            icon = { Icon(Icons.Default.Restaurant, contentDescription = stringResource(R.string.nav_recipes)) },
+            label = { Text(stringResource(R.string.nav_recipes), fontSize = 10.sp) },
             selected = selectedTab == "Recipes",
-            onClick = { 
-                // Lógica especial para Recipes: Si ya estamos en el stack de navegación de Recipes 
-                // (por ejemplo, en ScanMeal pulsado desde Recipes), intentamos volver a Recipes.
-                // Si no está en el stack, navegamos normalmente.
+            onClick = {
                 val popped = navController.popBackStack("recipes_destination", inclusive = false)
                 if (!popped) {
                     navigateToScreen("recipes_destination")
                 }
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                indicatorColor = MaterialTheme.colorScheme.primaryContainer
             )
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.PhotoCamera, contentDescription = "Scan Meal") },
-            label = { Text("Scan Meal", fontSize = 10.sp) },
-            selected = selectedTab == "Scan Meal",
-            onClick = { navigateToScreen("scan_meal") },
+            icon = { Icon(Icons.Default.Favorite, contentDescription = stringResource(R.string.nav_favorites)) },
+            label = { Text(stringResource(R.string.nav_favorites), fontSize = 10.sp) },
+            selected = selectedTab == "Favorites",
+            onClick = { navigateToScreen("favorites") },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                indicatorColor = MaterialTheme.colorScheme.primaryContainer
             )
         )
         NavigationBarItem(
-            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-            label = { Text("Profile", fontSize = 10.sp) },
+            icon = { Icon(Icons.Default.Person, contentDescription = stringResource(R.string.nav_profile)) },
+            label = { Text(stringResource(R.string.nav_profile), fontSize = 10.sp) },
             selected = selectedTab == "Profile",
             onClick = { navigateToScreen("profile") },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                indicatorColor = MaterialTheme.colorScheme.primaryContainer
             )
         )
     }

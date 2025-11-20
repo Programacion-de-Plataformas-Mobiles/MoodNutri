@@ -1,3 +1,132 @@
 <resources>
     <string name="app_name">MoodNutri</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_ingredients">Ingredients</string>
+    <string name="nav_recipes">Recipes</string>
+    <string name="nav_favorites">Favorites</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">MoodNutri</string>
+    <string name="how_are_you_feeling">How are you feeling today?</string>
+    <string name="mood_hint">e.g., Happy, Stressed, Energetic</string>
+    <string name="cooking_time_label">How much time do you have?</string>
+    <string name="cooking_time_hint">e.g., 30 minutes</string>
+    <string name="find_recipe_button">Find my recipe</string>
+    <string name="saved_recipes_title">Your saved recipes</string>
+    <string name="no_saved_recipes">No saved recipes yet</string>
+
+    <!-- Scan Ingredients Screen -->
+    <string name="scan_ingredients_button">Scan Ingredients</string>
+    <string name="select_image_prompt">Select an image to start ingredient analysis.</string>
+    <string name="analyzing_ingredients">Analyzing ingredients...</string>
+    <string name="your_ingredients">Your Ingredients:</string>
+    <string name="add_ingredient_hint">Add ingredient</string>
+    <string name="generate_recipe_button">Generate Recipe</string>
+    <string name="scan_again_button">Scan Again</string>
+    <string name="try_again_button">Try Again</string>
+
+    <!-- Scan Meal Screen -->
+    <string name="scan_meal_title">Scan Your Cooked Meal</string>
+    <string name="scan_meal_comparing">Scan Your Cooked Meal (Comparing with %s)</string>
+    <string name="analyzing_meal">Analyzing meal...</string>
+    <string name="take_picture_prompt">Take a picture of your meal to analyze its ingredients.</string>
+    <string name="detected_ingredients">Detected Ingredients:</string>
+    <string name="add_new_ingredient">Add New Ingredient:</string>
+    <string name="ingredient_name">Name</string>
+    <string name="ingredient_quantity">Qty</string>
+    <string name="calculate_nutrition_button">Calculate Nutrition</string>
+    <string name="calculating">Calculating...</string>
+    <string name="nutritional_information">Nutritional Information</string>
+    <string name="calories_label">Calories</string>
+    <string name="protein_label">Protein</string>
+    <string name="carbs_label">Carbs</string>
+    <string name="add_to_meals_button">Add to Today\'s Meals</string>
+    <string name="meal_added_title">Meal Added!</string>
+    <string name="meal_added_message">Your meal has been added to today\'s nutrition tracking.</string>
+    <string name="view_profile_button">View Profile</string>
+    <string name="ok_button">OK</string>
+
+    <!-- Recipe Screen -->
+    <string name="generating_recipe">Generating your recipe...</string>
+    <string name="ready_in">Ready in: %s</string>
+    <string name="why_this_recipe">Why this recipe?</string>
+    <string name="ingredients_title">Ingredients:</string>
+    <string name="steps_title">Steps:</string>
+    <string name="save_recipe_button">Save Recipe</string>
+    <string name="saving">Saving...</string>
+    <string name="saved">Saved</string>
+    <string name="scan_meal_button">Scan Meal</string>
+    <string name="remove_from_favorites">Remove from favorites</string>
+    <string name="add_to_favorites">Add to favorites</string>
+
+    <!-- Favorites Screen -->
+    <string name="favorites_title">My Favorite Recipes</string>
+    <string name="available_offline">Available Offline (Max 5)</string>
+    <string name="all_favorites_online">All Favorites (Online)</string>
+    <string name="no_favorites">No favorite recipes yet</string>
+    <string name="add_recipes_to_favorites">Add recipes to favorites from the Recipes tab</string>
+    <string name="offline">Offline</string>
+    <string name="favorite">Favorite</string>
+    <string name="time_label">Time</string>
+    <string name="est_calories">Est. Calories</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Profile</string>
+    <string name="emotional_state">Emotional state</string>
+    <string name="nutrition">Nutrition</string>
+    <string name="daily_goals">Daily Goals</string>
+    <string name="calories">Calories</string>
+    <string name="protein">Protein</string>
+    <string name="carbs">Carbs</string>
+    <string name="progress">Progress</string>
+    <string name="settings">Settings</string>
+    <string name="language">Language</string>
+    <string name="theme">Theme</string>
+    <string name="logout">Logout</string>
+
+    <!-- Theme Options -->
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System Default</string>
+
+    <!-- Language Options -->
+    <string name="language_english">English</string>
+    <string name="language_spanish">Spanish</string>
+    <string name="language_french">French</string>
+
+    <!-- Goals -->
+    <string name="set_calorie_goal">Set Daily Calorie Goal</string>
+    <string name="set_protein_goal">Set Daily Protein Goal</string>
+    <string name="set_carbs_goal">Set Daily Carbs Goal</string>
+    <string name="goal_hint">Enter goal</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Photo -->
+    <string name="change_photo">Change Photo</string>
+    <string name="select_photo">Select from Gallery</string>
+
+    <!-- Login/Signup -->
+    <string name="login_title">Login</string>
+    <string name="signup_title">Sign Up</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="login_button">Login</string>
+    <string name="signup_button">Sign Up</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="have_account">Already have an account?</string>
+
+    <!-- Units -->
+    <string name="kcal">kcal</string>
+    <string name="grams">g</string>
+
+    <!-- Common -->
+    <string name="add">Add</string>
+    <string name="remove">Remove</string>
+    <string name="close">Close</string>
+    <string name="ingredient">Ingredient</string>
+    <string name="quantity">Quantity</string>
 </resources>

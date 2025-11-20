@@ -1,0 +1,132 @@
+<resources>
+    <string name="app_name">MoodNutri</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_ingredients">Ingredientes</string>
+    <string name="nav_recipes">Recetas</string>
+    <string name="nav_favorites">Favoritos</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Home Screen -->
+    <string name="home_title">MoodNutri</string>
+    <string name="how_are_you_feeling">¿Cómo te sientes hoy?</string>
+    <string name="mood_hint">ej., Feliz, Estresado, Energético</string>
+    <string name="cooking_time_label">¿Cuánto tiempo tienes?</string>
+    <string name="cooking_time_hint">ej., 30 minutos</string>
+    <string name="find_recipe_button">Encuentra mi receta</string>
+    <string name="saved_recipes_title">Tus recetas guardadas</string>
+    <string name="no_saved_recipes">Aún no hay recetas guardadas</string>
+
+    <!-- Scan Ingredients Screen -->
+    <string name="scan_ingredients_button">Escanear Ingredientes</string>
+    <string name="select_image_prompt">Selecciona una imagen para comenzar el análisis de ingredientes.</string>
+    <string name="analyzing_ingredients">Analizando ingredientes...</string>
+    <string name="your_ingredients">Tus Ingredientes:</string>
+    <string name="add_ingredient_hint">Agregar ingrediente</string>
+    <string name="generate_recipe_button">Generar Receta</string>
+    <string name="scan_again_button">Escanear de Nuevo</string>
+    <string name="try_again_button">Intentar de Nuevo</string>
+
+    <!-- Scan Meal Screen -->
+    <string name="scan_meal_title">Escanea tu Comida Preparada</string>
+    <string name="scan_meal_comparing">Escanea tu Comida Preparada (Comparando con %s)</string>
+    <string name="analyzing_meal">Analizando comida...</string>
+    <string name="take_picture_prompt">Toma una foto de tu comida para analizar sus ingredientes.</string>
+    <string name="detected_ingredients">Ingredientes Detectados:</string>
+    <string name="add_new_ingredient">Agregar Nuevo Ingrediente:</string>
+    <string name="ingredient_name">Nombre</string>
+    <string name="ingredient_quantity">Cant.</string>
+    <string name="calculate_nutrition_button">Calcular Nutrición</string>
+    <string name="calculating">Calculando...</string>
+    <string name="nutritional_information">Información Nutricional</string>
+    <string name="calories_label">Calorías</string>
+    <string name="protein_label">Proteína</string>
+    <string name="carbs_label">Carbohidratos</string>
+    <string name="add_to_meals_button">Agregar a Comidas de Hoy</string>
+    <string name="meal_added_title">¡Comida Agregada!</string>
+    <string name="meal_added_message">Tu comida ha sido agregada al seguimiento nutricional de hoy.</string>
+    <string name="view_profile_button">Ver Perfil</string>
+    <string name="ok_button">OK</string>
+
+    <!-- Recipe Screen -->
+    <string name="generating_recipe">Generando tu receta...</string>
+    <string name="ready_in">Lista en: %s</string>
+    <string name="why_this_recipe">¿Por qué esta receta?</string>
+    <string name="ingredients_title">Ingredientes:</string>
+    <string name="steps_title">Pasos:</string>
+    <string name="save_recipe_button">Guardar Receta</string>
+    <string name="saving">Guardando...</string>
+    <string name="saved">Guardada</string>
+    <string name="scan_meal_button">Escanear Comida</string>
+    <string name="remove_from_favorites">Quitar de favoritos</string>
+    <string name="add_to_favorites">Agregar a favoritos</string>
+
+    <!-- Favorites Screen -->
+    <string name="favorites_title">Mis Recetas Favoritas</string>
+    <string name="available_offline">Disponible Sin Conexión (Máx 5)</string>
+    <string name="all_favorites_online">Todos los Favoritos (En Línea)</string>
+    <string name="no_favorites">Aún no hay recetas favoritas</string>
+    <string name="add_recipes_to_favorites">Agrega recetas a favoritos desde la pestaña de Recetas</string>
+    <string name="offline">Sin conexión</string>
+    <string name="favorite">Favorito</string>
+    <string name="time_label">Tiempo</string>
+    <string name="est_calories">Calorías Est.</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_title">Perfil</string>
+    <string name="emotional_state">Estado emocional</string>
+    <string name="nutrition">Nutrición</string>
+    <string name="daily_goals">Objetivos Diarios</string>
+    <string name="calories">Calorías</string>
+    <string name="protein">Proteína</string>
+    <string name="carbs">Carbohidratos</string>
+    <string name="progress">Progreso</string>
+    <string name="settings">Configuración</string>
+    <string name="language">Idioma</string>
+    <string name="theme">Tema</string>
+    <string name="logout">Cerrar Sesión</string>
+
+    <!-- Theme Options -->
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Oscuro</string>
+    <string name="theme_system">Predeterminado del Sistema</string>
+
+    <!-- Language Options -->
+    <string name="language_english">Inglés</string>
+    <string name="language_spanish">Español</string>
+    <string name="language_french">Francés</string>
+
+    <!-- Goals -->
+    <string name="set_calorie_goal">Establecer Objetivo de Calorías Diarias</string>
+    <string name="set_protein_goal">Establecer Objetivo de Proteína Diaria</string>
+    <string name="set_carbs_goal">Establecer Objetivo de Carbohidratos Diarios</string>
+    <string name="goal_hint">Ingrese objetivo</string>
+    <string name="save">Guardar</string>
+    <string name="cancel">Cancelar</string>
+
+    <!-- Photo -->
+    <string name="change_photo">Cambiar Foto</string>
+    <string name="select_photo">Seleccionar de Galería</string>
+
+    <!-- Login/Signup -->
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="signup_title">Registrarse</string>
+    <string name="email_label">Correo Electrónico</string>
+    <string name="password_label">Contraseña</string>
+    <string name="login_button">Iniciar Sesión</string>
+    <string name="signup_button">Registrarse</string>
+    <string name="no_account">¿No tienes cuenta?</string>
+    <string name="have_account">¿Ya tienes cuenta?</string>
+
+    <!-- Units -->
+    <string name="kcal">kcal</string>
+    <string name="grams">g</string>
+
+    <!-- Common -->
+    <string name="add">Agregar</string>
+    <string name="remove">Quitar</string>
+    <string name="close">Cerrar</string>
+    <string name="ingredient">Ingrediente</string>
+    <string name="quantity">Cantidad</string>
+</resources>

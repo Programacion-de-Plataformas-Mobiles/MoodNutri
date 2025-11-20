@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
+    id("kotlin-kapt")
 }
 
 // Lee las API Keys desde local.properties
@@ -50,7 +52,7 @@ android {
     }
     buildFeatures {
         compose = true
-        buildConfig = true // Habilita la generación de BuildConfig
+        buildConfig = true
     }
 }
 
@@ -69,7 +71,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.9.5")
     implementation("androidx.core:core-splashscreen:1.0.1")
-    
+
     // ViewModel y Gemini
     implementation("com.google.ai.client.generativeai:generativeai:0.5.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
@@ -81,6 +83,22 @@ dependencies {
     // Coil (para cargar imágenes desde URL)
     implementation("io.coil-kt:coil-compose:2.6.0")
 
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
+        // Para seleccionar imágenes de galería
+    implementation("io.coil-kt:coil-compose:2.6.0")
+    implementation("androidx.activity:activity-compose:1.9.0")
+
+        // DataStore para guardar preferencias (idioma, tema, etc.)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

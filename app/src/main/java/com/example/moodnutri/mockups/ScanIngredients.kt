@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,14 +27,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
+import com.example.moodnutri.R
 import com.example.moodnutri.viewmodel.RecipeFinderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanIngredientsScreen(
-    navController: NavController, 
-    homeViewModel: HomeViewModel, 
-    recipeViewModel: RecipeFinderViewModel, // Parámetro añadido
+    navController: NavController,
+    homeViewModel: HomeViewModel,
+    recipeViewModel: RecipeFinderViewModel,
     scanViewModel: ScanIngredientsViewModel = viewModel()
 ) {
     val uiState by scanViewModel.uiState.collectAsState()
@@ -42,12 +44,12 @@ fun ScanIngredientsScreen(
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview(),
-        onResult = { bitmap -> 
-            bitmap?.let { 
+        onResult = { bitmap ->
+            bitmap?.let {
                 scanViewModel.analyzeImage(it) { ingredients ->
                     homeViewModel.setIngredients(ingredients)
                 }
-            } 
+            }
         }
     )
 
@@ -75,41 +77,49 @@ fun ScanIngredientsScreen(
             }
 
             if (homeViewModel.userIngredients.isEmpty() && uiState !is ScanUiState.Loading) {
-                 if (selectedImage == null) {
-                    ImageSelectionButton(selectedImage = null, buttonText = "Scan Ingredients", onClick = {
-                        val permissionCheckResult = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-                        if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-                            cameraLauncher.launch(null)
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.CAMERA)
+                if (selectedImage == null) {
+                    ImageSelectionButton(
+                        selectedImage = null,
+                        buttonText = stringResource(R.string.scan_ingredients_button),
+                        onClick = {
+                            val permissionCheckResult = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+                            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                                cameraLauncher.launch(null)
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
                         }
-                    })
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("Select an image to start ingredient analysis.")
-                 }
+                    Text(
+                        stringResource(R.string.select_image_prompt),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
             }
 
             if (uiState is ScanUiState.Loading) {
                 CircularProgressIndicator()
-                Text("Analyzing ingredients...")
+                Text(
+                    stringResource(R.string.analyzing_ingredients),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
-            
+
             if (homeViewModel.userIngredients.isNotEmpty()) {
                 IngredientEditor(homeViewModel.userIngredients, homeViewModel)
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = {
-                        // Ahora usamos el viewModel de recetas para iniciar la búsqueda
                         recipeViewModel.searchRecipe(
                             userIngredients = homeViewModel.userIngredients,
                             mood = homeViewModel.mood,
                             availableTime = homeViewModel.cookingTime
                         )
-                        // Navegamos a la pestaña de recetas usando la misma lógica que la BottomBar
-                        navController.navigate("recipes_destination") { 
-                            popUpTo(navController.graph.findStartDestination().id) { 
-                                saveState = true 
+                        navController.navigate("recipes_destination") {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
                             launchSingleTop = true
                             restoreState = true
@@ -118,19 +128,19 @@ fun ScanIngredientsScreen(
                     modifier = Modifier.fillMaxWidth().height(50.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("Generate Recipe", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.generate_recipe_button), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedButton(
-                    onClick = { 
+                    onClick = {
                         scanViewModel.clearScan()
                         homeViewModel.userIngredients.clear()
-                     },
+                    },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Scan Again")
+                    Text(stringResource(R.string.scan_again_button))
                 }
             }
 
@@ -138,11 +148,11 @@ fun ScanIngredientsScreen(
                 (uiState as ScanUiState.Error).message.let {
                     Text(it, color = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { 
-                        scanViewModel.clearScan() 
+                    Button(onClick = {
+                        scanViewModel.clearScan()
                         homeViewModel.userIngredients.clear()
                     }) {
-                        Text("Try Again")
+                        Text(stringResource(R.string.try_again_button))
                     }
                 }
             }
@@ -156,7 +166,11 @@ fun IngredientEditor(ingredients: List<String>, homeViewModel: HomeViewModel) {
     var newIngredient by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text("Your Ingredients:", style = MaterialTheme.typography.titleMedium)
+        Text(
+            stringResource(R.string.your_ingredients),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
         LazyRow(modifier = Modifier.padding(vertical = 8.dp)) {
             items(ingredients) {
                 InputChip(
@@ -164,7 +178,11 @@ fun IngredientEditor(ingredients: List<String>, homeViewModel: HomeViewModel) {
                     onClick = { homeViewModel.removeIngredient(it) },
                     label = { Text(it) },
                     trailingIcon = { Icon(Icons.Default.Close, "Remove") },
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier.padding(horizontal = 4.dp),
+                    colors = InputChipDefaults.inputChipColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        labelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 )
             }
         }
@@ -172,16 +190,23 @@ fun IngredientEditor(ingredients: List<String>, homeViewModel: HomeViewModel) {
             OutlinedTextField(
                 value = newIngredient,
                 onValueChange = { newIngredient = it },
-                label = { Text("Add ingredient") },
-                modifier = Modifier.weight(1f)
+                label = { Text(stringResource(R.string.add_ingredient_hint)) },
+                modifier = Modifier.weight(1f),
+                singleLine = true
             )
-            IconButton(onClick = {
-                if (newIngredient.isNotBlank()) {
-                    homeViewModel.addIngredient(newIngredient)
-                    newIngredient = ""
-                }
-            }) {
-                Icon(Icons.Default.Add, "Add")
+            IconButton(
+                onClick = {
+                    if (newIngredient.isNotBlank()) {
+                        homeViewModel.addIngredient(newIngredient)
+                        newIngredient = ""
+                    }
+                },
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
+                Icon(Icons.Default.Add, stringResource(R.string.add))
             }
         }
     }
@@ -190,9 +215,10 @@ fun IngredientEditor(ingredients: List<String>, homeViewModel: HomeViewModel) {
 @Preview(showBackground = true)
 @Composable
 fun ScanIngredientsScreenPreview() {
+    // Para el preview, usamos un navController y viewModels de prueba
     ScanIngredientsScreen(
-        navController = rememberNavController(), 
-        homeViewModel = HomeViewModel(),
-        recipeViewModel = viewModel() // Pasamos una instancia para el preview
+        navController = rememberNavController(),
+        homeViewModel = viewModel(),
+        recipeViewModel = viewModel()
     )
 }

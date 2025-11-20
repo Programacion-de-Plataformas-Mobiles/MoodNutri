@@ -1,13 +1,16 @@
 package com.example.moodnutri.mockups
 
+import android.app.Application
 import android.graphics.Bitmap
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodnutri.BuildConfig
 import com.example.moodnutri.data.models.MealIngredient
 import com.example.moodnutri.data.models.openAi.GeneratedRecipe
+import com.example.moodnutri.data.preferences.UserPreferencesManager
+import com.example.moodnutri.data.repository.NutritionRepository
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.gson.Gson
@@ -15,42 +18,60 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 sealed interface ScanMealUiState {
     object Idle : ScanMealUiState
     object Loading : ScanMealUiState
-    object Success : ScanMealUiState 
+    object Success : ScanMealUiState
     data class Error(val message: String) : ScanMealUiState
 }
 
-class ScanMealViewModel : ViewModel() {
+data class NutritionInfo(
+    val calories: Int = 0,
+    val protein: Int = 0,
+    val carbs: Int = 0
+)
+
+class ScanMealViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow<ScanMealUiState>(ScanMealUiState.Idle)
     val uiState = _uiState.asStateFlow()
 
     val selectedImage = mutableStateOf<Bitmap?>(null)
-    
-    // Estado para el resultado del cálculo de calorías
-    val totalCalories = mutableStateOf<String?>(null)
-    val isCalculatingCalories = mutableStateOf(false)
+
+    private val _nutritionInfo = MutableStateFlow(NutritionInfo())
+    val nutritionInfo = _nutritionInfo.asStateFlow()
+
+    val isCalculatingNutrition = mutableStateOf(false)
 
     val detectedIngredients = mutableStateListOf<MealIngredient>()
 
     private val generativeModel = GenerativeModel(
-        modelName = "gemini-2.5-flash",
+        modelName = "gemini-2.0-flash-exp",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
+
+    private val nutritionRepository = NutritionRepository()
+    private val preferencesManager = UserPreferencesManager(application)
 
     fun analyzeMeal(bitmap: Bitmap, baseRecipe: GeneratedRecipe? = null) {
         selectedImage.value = bitmap
         _uiState.value = ScanMealUiState.Loading
         detectedIngredients.clear()
-        totalCalories.value = null // Resetear calorías al analizar nueva imagen
+        _nutritionInfo.value = NutritionInfo()
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val prompt = buildPrompt(baseRecipe)
+                val language = preferencesManager.language.firstOrNull() ?: "en"
+                val languageName = when(language) {
+                    "es" -> "Spanish"
+                    "fr" -> "French"
+                    else -> "English"
+                }
+
+                val prompt = buildPrompt(baseRecipe, languageName)
 
                 val inputContent = content {
                     image(bitmap)
@@ -58,14 +79,14 @@ class ScanMealViewModel : ViewModel() {
                 }
 
                 val response = generativeModel.generateContent(inputContent)
-                
+
                 val jsonString = response.text?.trim()?.removePrefix("```json")?.removeSuffix("```") ?: "[]"
-                
+
                 val itemType = object : TypeToken<List<MealIngredient>>() {}.type
                 val ingredients: List<MealIngredient> = Gson().fromJson(jsonString, itemType)
 
-                val ingredientsWithIds = ingredients.map { 
-                    it.copy(id = java.util.UUID.randomUUID().toString()) 
+                val ingredientsWithIds = ingredients.map {
+                    it.copy(id = java.util.UUID.randomUUID().toString())
                 }
 
                 detectedIngredients.addAll(ingredientsWithIds)
@@ -78,7 +99,7 @@ class ScanMealViewModel : ViewModel() {
         }
     }
 
-    private fun buildPrompt(baseRecipe: GeneratedRecipe?): String {
+    private fun buildPrompt(baseRecipe: GeneratedRecipe?, languageName: String): String {
         val baseInstruction = if (baseRecipe != null) {
             """
             I have cooked a meal based on this recipe:
@@ -98,45 +119,82 @@ class ScanMealViewModel : ViewModel() {
         return """
         $baseInstruction
 
-        You must respond ONLY with a valid JSON array of objects. Each object must have two fields:
-        - "name": The name of the ingredient.
-        - "quantity": The estimated quantity (e.g., "100g", "1 cup", "2 slices").
+        IMPORTANT: Respond in $languageName language.
 
-        Example format:
+        You must respond ONLY with a valid JSON array of objects. Each object must have two fields:
+        - "name": The name of the ingredient in $languageName.
+        - "quantity": The estimated quantity in $languageName (e.g., "100g", "1 taza", "2 tranches").
+
+        Example format for $languageName:
         [
-            {"name": "Chicken Breast", "quantity": "150g"},
-            {"name": "Broccoli", "quantity": "80g"}
+            {"name": "Ingredient name in $languageName", "quantity": "quantity in $languageName"},
+            {"name": "Another ingredient in $languageName", "quantity": "quantity in $languageName"}
         ]
         
         Do not include any other text or markdown formatting. Just the JSON array.
         """
     }
 
-    fun calculateCalories() {
+    fun calculateNutrition() {
         if (detectedIngredients.isEmpty()) return
-        
-        isCalculatingCalories.value = true
+
+        isCalculatingNutrition.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val ingredientsList = detectedIngredients.joinToString("\n") { "- ${it.name}: ${it.quantity}" }
                 val prompt = """
-                    Calculate the total calories for the following list of ingredients with their quantities:
+                    Calculate the total nutritional information for the following list of ingredients with their quantities:
                     
                     $ingredientsList
                     
-                    Please provide ONLY the total numeric value of calories (e.g., "540"). Do not add any text or explanation. Just the number.
-                    If you cannot determine exactly, provide your best estimate.
+                    Please provide ONLY a JSON object with the following structure:
+                    {
+                        "calories": 540,
+                        "protein": 45,
+                        "carbs": 35
+                    }
+                    
+                    Where:
+                    - calories is the total calories in kcal
+                    - protein is the total protein in grams
+                    - carbs is the total carbohydrates in grams
+                    
+                    Respond ONLY with the JSON object, no other text.
                 """.trimIndent()
 
                 val response = generativeModel.generateContent(prompt)
-                val calories = response.text?.trim() ?: "N/A"
-                
-                totalCalories.value = calories
+                val jsonResponse = response.text?.trim()?.removePrefix("```json")?.removeSuffix("```") ?: "{}"
+
+                val nutrition = Gson().fromJson(jsonResponse, NutritionInfo::class.java)
+                _nutritionInfo.value = nutrition
+
             } catch (e: Exception) {
                 e.printStackTrace()
-                totalCalories.value = "Error"
+                _nutritionInfo.value = NutritionInfo(calories = 0, protein = 0, carbs = 0)
             } finally {
-                isCalculatingCalories.value = false
+                isCalculatingNutrition.value = false
+            }
+        }
+    }
+
+    fun addMealToToday() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val nutrition = _nutritionInfo.value
+                if (nutrition.calories > 0) {
+                    val result = nutritionRepository.addMealToToday(
+                        recipeId = "scanned_meal_${System.currentTimeMillis()}",
+                        calories = nutrition.calories,
+                        protein = nutrition.protein,
+                        carbs = nutrition.carbs
+                    )
+
+                    if (result.isSuccess) {
+                        android.util.Log.d("ScanMealVM", "✅ Meal added to today successfully")
+                    }
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("ScanMealVM", "❌ Error adding meal to today", e)
             }
         }
     }
@@ -150,10 +208,9 @@ class ScanMealViewModel : ViewModel() {
     fun removeIngredient(ingredient: MealIngredient) {
         detectedIngredients.remove(ingredient)
     }
-    
+
     fun updateIngredient(index: Int, newName: String, newQuantity: String) {
         if (index in detectedIngredients.indices) {
-            // Mantenemos el ID original para evitar recomposiciones innecesarias
             val originalId = detectedIngredients[index].id
             detectedIngredients[index] = MealIngredient(newName, newQuantity, id = originalId)
         }
@@ -162,7 +219,7 @@ class ScanMealViewModel : ViewModel() {
     fun clearScan() {
         selectedImage.value = null
         detectedIngredients.clear()
-        totalCalories.value = null
+        _nutritionInfo.value = NutritionInfo()
         _uiState.value = ScanMealUiState.Idle
     }
 }
