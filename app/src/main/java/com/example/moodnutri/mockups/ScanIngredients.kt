@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
 import com.example.moodnutri.viewmodel.RecipeFinderViewModel
 
@@ -105,9 +106,11 @@ fun ScanIngredientsScreen(
                             mood = homeViewModel.mood,
                             availableTime = homeViewModel.cookingTime
                         )
-                        // Navegamos a la pestaña de recetas para ver el resultado
+                        // Navegamos a la pestaña de recetas usando la misma lógica que la BottomBar
                         navController.navigate("recipes_destination") { 
-                            popUpTo("home") { saveState = true }
+                            popUpTo(navController.graph.findStartDestination().id) { 
+                                saveState = true 
+                            }
                             launchSingleTop = true
                             restoreState = true
                         }

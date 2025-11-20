@@ -144,8 +144,16 @@ fun GeneratedRecipeContent(recipe: GeneratedRecipe) {
 /*
 // El preview necesita una instancia del ViewModel
 @Preview(showBackground = true)
+// ESTE ARCHIVO NO SE DEBE USAR.
+// La versión correcta de la pantalla de recetas está en:
+// com.example.moodnutri.mockups.Recipe.kt
+
+/*
+import androidx.compose.runtime.Composable
+
 @Composable
-fun RecipeScreenPreview() {
-    RecipeScreen(navController = rememberNavController(), viewModel = RecipeFinderViewModel())
+fun RecipeScreenDeprecated() {
+    // Deprecated
 }
+*/
 */

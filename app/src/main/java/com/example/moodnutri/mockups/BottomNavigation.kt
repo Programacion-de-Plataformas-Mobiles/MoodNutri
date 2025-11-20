@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 
 
 @Composable
@@ -19,7 +20,9 @@ fun SharedBottomNavigationBar(
     ) {
         val navigateToScreen = { route: String ->
             navController.navigate(route) {
-                popUpTo("home") { saveState = true }
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
                 launchSingleTop = true
                 restoreState = true
             }
@@ -70,6 +73,15 @@ fun SharedBottomNavigationBar(
             label = { Text("Favorites", fontSize = 10.sp) },
             selected = selectedTab == "Favorites",
             onClick = { navigateToScreen("favorites") },
+            onClick = { 
+                // Lógica especial para Recipes: Si ya estamos en el stack de navegación de Recipes 
+                // (por ejemplo, en ScanMeal pulsado desde Recipes), intentamos volver a Recipes.
+                // Si no está en el stack, navegamos normalmente.
+                val popped = navController.popBackStack("recipes_destination", inclusive = false)
+                if (!popped) {
+                    navigateToScreen("recipes_destination")
+                }
+            },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = Color(0xFF4CAF50),
                 selectedTextColor = Color(0xFF4CAF50),
