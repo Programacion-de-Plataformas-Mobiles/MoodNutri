@@ -9,7 +9,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 
-
 @Composable
 fun SharedBottomNavigationBar(
     navController: NavController,
@@ -29,8 +28,7 @@ fun SharedBottomNavigationBar(
         }
 
         NavigationBarItem(
-            // FIX: Added 'imageVector ='
-            icon = { Icon(imageVector = Icons.Default.Home, contentDescription = "Home") },
+            icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
             label = { Text("Home", fontSize = 10.sp) },
             selected = selectedTab == "Home",
             onClick = { navigateToScreen("home") },
@@ -42,8 +40,7 @@ fun SharedBottomNavigationBar(
             )
         )
         NavigationBarItem(
-            // FIX: Added 'imageVector ='
-            icon = { Icon(imageVector = Icons.Default.Fastfood, contentDescription = "Ingredients") },
+            icon = { Icon(Icons.Default.Fastfood, contentDescription = "Ingredients") },
             label = { Text("Ingredients", fontSize = 10.sp) },
             selected = selectedTab == "Ingredients",
             onClick = { navigateToScreen("scan_ingredients") },
@@ -55,24 +52,9 @@ fun SharedBottomNavigationBar(
             )
         )
         NavigationBarItem(
-            // FIX: Added 'imageVector ='
-            icon = { Icon(imageVector = Icons.Default.Restaurant, contentDescription = "Recipes") },
+            icon = { Icon(Icons.Default.Restaurant, contentDescription = "Recipes") },
             label = { Text("Recipes", fontSize = 10.sp) },
             selected = selectedTab == "Recipes",
-            onClick = { navigateToScreen("recipes_destination") },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF4CAF50),
-                selectedTextColor = Color(0xFF4CAF50),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
-            )
-        )
-        NavigationBarItem(
-            // FIX: Added 'imageVector ='
-            icon = { Icon(imageVector = Icons.Default.Favorite, contentDescription = "Favorites") },
-            label = { Text("Favorites", fontSize = 10.sp) },
-            selected = selectedTab == "Favorites",
-            onClick = { navigateToScreen("favorites") },
             onClick = { 
                 // Lógica especial para Recipes: Si ya estamos en el stack de navegación de Recipes 
                 // (por ejemplo, en ScanMeal pulsado desde Recipes), intentamos volver a Recipes.
@@ -90,8 +72,7 @@ fun SharedBottomNavigationBar(
             )
         )
         NavigationBarItem(
-            // FIX: Added 'imageVector ='
-            icon = { Icon(imageVector = Icons.Default.PhotoCamera, contentDescription = "Scan Meal") },
+            icon = { Icon(Icons.Default.PhotoCamera, contentDescription = "Scan Meal") },
             label = { Text("Scan Meal", fontSize = 10.sp) },
             selected = selectedTab == "Scan Meal",
             onClick = { navigateToScreen("scan_meal") },
@@ -103,8 +84,7 @@ fun SharedBottomNavigationBar(
             )
         )
         NavigationBarItem(
-            // FIX: Added 'imageVector ='
-            icon = { Icon(imageVector = Icons.Default.Person, contentDescription = "Profile") },
+            icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
             label = { Text("Profile", fontSize = 10.sp) },
             selected = selectedTab == "Profile",
             onClick = { navigateToScreen("profile") },
