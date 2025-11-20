@@ -34,7 +34,7 @@ fun AppNavigation() {
             HomeScreen(
                 navController = navController,
                 viewModel = homeViewModel,
-                recipesViewModel = homeRecipesViewModel
+                //recipesViewModel = homeRecipesViewModel
             )
         }
         composable("scan_ingredients") {
