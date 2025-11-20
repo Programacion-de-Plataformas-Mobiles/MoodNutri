@@ -49,7 +49,7 @@ class ScanMealViewModel(application: Application) : AndroidViewModel(application
     val detectedIngredients = mutableStateListOf<MealIngredient>()
 
     private val generativeModel = GenerativeModel(
-        modelName = "gemini-2.0-flash-exp",
+        modelName = "gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
 

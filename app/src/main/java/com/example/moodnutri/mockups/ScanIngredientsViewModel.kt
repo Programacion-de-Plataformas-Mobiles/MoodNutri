@@ -32,7 +32,7 @@ class ScanIngredientsViewModel(application: Application) : AndroidViewModel(appl
     val selectedImage = mutableStateOf<Bitmap?>(null)
 
     private val generativeModel = GenerativeModel(
-        modelName = "gemini-2.0-flash-exp",
+        modelName = "gemini-2.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
 
