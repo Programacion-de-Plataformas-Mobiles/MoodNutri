@@ -7,11 +7,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 class HomeViewModel : ViewModel() {
-    // Datos para la pantalla Home
     var mood by mutableStateOf("")
     var cookingTime by mutableStateOf("")
 
-    // Lista de ingredientes compartida para el flujo de recetas
     val userIngredients = mutableStateListOf<String>()
 
     val isFormValid: Boolean
