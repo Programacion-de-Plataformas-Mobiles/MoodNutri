@@ -6,12 +6,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodnutri.BuildConfig
 import com.example.moodnutri.data.RecipeRepository
+import com.example.moodnutri.data.local.AppDatabase
 import com.example.moodnutri.data.models.openAi.ChatMessage
 import com.example.moodnutri.data.models.openAi.ChatRequest
 import com.example.moodnutri.data.models.openAi.GeneratedRecipe
 import com.example.moodnutri.data.models.firebase.FirebaseRecipe
 import com.example.moodnutri.data.preferences.UserPreferencesManager
 import com.example.moodnutri.data.repository.FirebaseRecipeRepository
+import com.example.moodnutri.data.repository.LocalRecipeRepository
 import com.example.moodnutri.data.repository.NutritionRepository
 import com.example.moodnutri.data.network.RetrofitInstance
 import com.google.gson.Gson
@@ -45,6 +47,9 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
     val favoriteInProgress: StateFlow<Boolean> = _favoriteInProgress.asStateFlow()
 
     private val firebaseRepository = FirebaseRecipeRepository()
+    private val localRepository = LocalRecipeRepository(
+        AppDatabase.getDatabase(application).favoriteRecipeDao()
+    )
     private val preferencesManager = UserPreferencesManager(application)
     private val recipeRepository = RecipeRepository()
     private val openAiService = RetrofitInstance.openAiApi
@@ -192,7 +197,6 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
 
             Log.d("RecipeFinderVM", "📨 Enviando prompt a ChatGPT para generar receta...")
 
-            // PROMPT EXACTO del segundo código original - SIN INVENTAR NADA
             val prompt = """
                 User's context:
                 - Mood: $mood
@@ -284,7 +288,10 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
 
     private suspend fun checkIfFavorite(recipeId: String) {
         try {
-            _isFavorite.value = firebaseRepository.isFavorite(recipeId)
+            val isFirebaseFavorite = firebaseRepository.isFavorite(recipeId)
+            val isLocalFavorite = localRepository.isFavorite(recipeId)
+            _isFavorite.value = isFirebaseFavorite || isLocalFavorite
+            Log.d("RecipeFinderVM", "✅ Favorite status checked - Firebase: $isFirebaseFavorite, Local: $isLocalFavorite")
         } catch (e: Exception) {
             Log.e("RecipeFinderVM", "Error checking favorite status", e)
             _isFavorite.value = false
@@ -295,6 +302,7 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
         try {
             val allRecipes = firebaseRepository.getAllRecipes()
             _isSaved.value = allRecipes.getOrNull()?.any { it.id == recipeId } == true
+            Log.d("RecipeFinderVM", "✅ Saved status checked: ${_isSaved.value}")
         } catch (e: Exception) {
             Log.e("RecipeFinderVM", "Error checking saved status", e)
             _isSaved.value = false
@@ -340,13 +348,13 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
 
                 if (result.isSuccess) {
                     _isSaved.value = true
-                    Log.d("RecipeFinderVM", " Recipe saved successfully! isSaved = true")
+                    Log.d("RecipeFinderVM", "✅ Recipe saved successfully! isSaved = true")
                 } else {
-                    Log.e("RecipeFinderVM", " Error saving recipe: ${result.exceptionOrNull()}")
+                    Log.e("RecipeFinderVM", "❌ Error saving recipe: ${result.exceptionOrNull()}")
                 }
 
             } catch (e: Exception) {
-                Log.e("RecipeFinderVM", " Exception saving recipe", e)
+                Log.e("RecipeFinderVM", "❌ Exception saving recipe", e)
             } finally {
                 _saveInProgress.value = false
                 Log.d("RecipeFinderVM", "Save operation completed. saveInProgress = false")
@@ -362,6 +370,10 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
         val recipe = state.recipe
         val newFavoriteStatus = !_isFavorite.value
 
+        Log.d("RecipeFinderVM", "=== TOGGLE FAVORITE ===")
+        Log.d("RecipeFinderVM", "Recipe ID: $recipeId")
+        Log.d("RecipeFinderVM", "New favorite status: $newFavoriteStatus")
+
         viewModelScope.launch(Dispatchers.IO) {
             _favoriteInProgress.value = true
             try {
@@ -376,16 +388,30 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
                     isFavorite = newFavoriteStatus
                 )
 
-                val result = firebaseRepository.toggleFavorite(firebaseRecipe, newFavoriteStatus)
+                // Guardar/actualizar en Firebase
+                val firebaseResult = firebaseRepository.toggleFavorite(firebaseRecipe, newFavoriteStatus)
 
-                if (result.isSuccess) {
-                    _isFavorite.value = newFavoriteStatus
+                if (firebaseResult.isSuccess) {
+                    // Si se marcó como favorito, también guardar en Room local
                     if (newFavoriteStatus) {
+                        Log.d("RecipeFinderVM", "Agregando a favoritos locales (Room)...")
+                        localRepository.addToFavorites(recipe, recipeId)
                         _isSaved.value = true
+                        Log.d("RecipeFinderVM", "✅ Receta agregada a favoritos locales")
+                    } else {
+                        // Si se quitó de favoritos, remover de Room
+                        Log.d("RecipeFinderVM", "Removiendo de favoritos locales (Room)...")
+                        localRepository.removeFromFavorites(recipeId)
+                        Log.d("RecipeFinderVM", "✅ Receta removida de favoritos locales")
                     }
+
+                    _isFavorite.value = newFavoriteStatus
+                    Log.d("RecipeFinderVM", "✅ Toggle favorite successful")
+                } else {
+                    Log.e("RecipeFinderVM", "❌ Error toggling favorite in Firebase")
                 }
             } catch (e: Exception) {
-                Log.e("RecipeFinderVM", "Error toggling favorite", e)
+                Log.e("RecipeFinderVM", "❌ Error toggling favorite", e)
             } finally {
                 _favoriteInProgress.value = false
             }
@@ -397,9 +423,9 @@ class RecipeFinderViewModel(application: Application) : AndroidViewModel(applica
             try {
                 val nutritionRepo = NutritionRepository()
                 nutritionRepo.addMealToToday(recipeId, calories, protein, carbs)
-                Log.d("RecipeFinderVM", " Meal added to today: $calories cal, $protein g protein, $carbs g carbs")
+                Log.d("RecipeFinderVM", "✅ Meal added to today: $calories cal, $protein g protein, $carbs g carbs")
             } catch (e: Exception) {
-                Log.e("RecipeFinderVM", " Error adding meal to today", e)
+                Log.e("RecipeFinderVM", "❌ Error adding meal to today", e)
             }
         }
     }

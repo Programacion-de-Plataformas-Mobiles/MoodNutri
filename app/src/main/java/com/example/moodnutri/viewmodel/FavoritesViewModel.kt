@@ -1,6 +1,7 @@
 package com.example.moodnutri.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.moodnutri.data.local.AppDatabase
@@ -33,6 +34,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun loadFavorites() {
+        Log.d("FavoritesVM", "=== LOADING FAVORITES ===")
         viewModelScope.launch {
             _isLoading.value = true
 
@@ -40,6 +42,10 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
             launch {
                 localRepository.getAllFavorites().collect { locals ->
                     _localFavorites.value = locals
+                    Log.d("FavoritesVM", "✅ Local favorites loaded: ${locals.size} recipes")
+                    locals.forEach { recipe ->
+                        Log.d("FavoritesVM", "  - ${recipe.name}")
+                    }
                 }
             }
 
@@ -48,6 +54,12 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
                 val result = firebaseRepository.getFavoriteRecipes()
                 result.onSuccess { recipes ->
                     _firebaseFavorites.value = recipes
+                    Log.d("FavoritesVM", "✅ Firebase favorites loaded: ${recipes.size} recipes")
+                    recipes.forEach { recipe ->
+                        Log.d("FavoritesVM", "  - ${recipe.name} (isFavorite: ${recipe.isFavorite})")
+                    }
+                }.onFailure { error ->
+                    Log.e("FavoritesVM", "❌ Error loading Firebase favorites", error)
                 }
             }
 
