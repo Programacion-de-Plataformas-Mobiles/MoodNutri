@@ -4,24 +4,29 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+// import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.moodnutri.data.models.openAi.GeneratedRecipe
 import com.example.moodnutri.mockups.SharedBottomNavigationBar
 import com.example.moodnutri.mockups.SharedTopAppBar
 import com.example.moodnutri.viewmodel.RecipeFinderState
 import com.example.moodnutri.viewmodel.RecipeFinderViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,17 +101,51 @@ fun GeneratedRecipeContent(recipe: GeneratedRecipe) {
         Text("Steps:", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.height(8.dp))
         recipe.steps.forEachIndexed { index, step -> Text("${index + 1}. $step", modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) }
-        
+
         Spacer(Modifier.height(32.dp))
         Button(onClick = { /* Placeholder */ }) {
             Text("Save Recipe")
         }
+
+        // BOTÓN DE FAVORITOS AÑADIDO (sin tocar nada más arriba)
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+        // TODO: Reemplazar con inyección de Hilt cuando esté disponible
+        // val repository = remember { OfflineFavoritesRepository(context) }
+        var isFavorite by remember { mutableStateOf(false) }
+
+        LaunchedEffect(recipe.name) {
+            // TODO: Implementar la verificación de favoritos
+            // isFavorite = repository.isFavorite(recipe.name)
+        }
+
+        IconButton(
+            onClick = {
+                scope.launch {
+                    if (isFavorite) {
+                        // TODO: repository.removeFromFavorites(recipe.name)
+                    } else {
+                        // TODO: repository.addToFavorites(recipe)
+                    }
+                    isFavorite = !isFavorite
+                }
+            },
+            modifier = Modifier.align(Alignment.End)
+        ) {
+            Icon(
+                imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                contentDescription = "Favorite",
+                tint = if (isFavorite) Color.Red else Color.Gray
+            )
+        }
     }
 }
 
+/*
 // El preview necesita una instancia del ViewModel
 @Preview(showBackground = true)
 @Composable
 fun RecipeScreenPreview() {
     RecipeScreen(navController = rememberNavController(), viewModel = RecipeFinderViewModel())
 }
+*/

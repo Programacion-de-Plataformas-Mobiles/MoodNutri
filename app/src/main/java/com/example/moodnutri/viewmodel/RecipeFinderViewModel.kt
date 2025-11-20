@@ -2,16 +2,19 @@ package com.example.moodnutri.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.moodnutri.data.RecipeDao
 import com.example.moodnutri.data.RecipeRepository
 import com.example.moodnutri.data.models.openAi.ChatMessage
 import com.example.moodnutri.data.models.openAi.ChatRequest
 import com.example.moodnutri.data.models.openAi.GeneratedRecipe
-import com.example.moodnutri.data.network.RetrofitInstance
+import com.example.moodnutri.data.network.OpenAiApiService
 import com.google.gson.Gson
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 sealed interface RecipeFinderState {
     object Idle : RecipeFinderState
@@ -20,13 +23,18 @@ sealed interface RecipeFinderState {
     data class Error(val message: String) : RecipeFinderState
 }
 
-class RecipeFinderViewModel : ViewModel() {
+@HiltViewModel
+class RecipeFinderViewModel @Inject constructor(
+    private val recipeDao: RecipeDao,
+    private val recipeRepository: RecipeRepository,
+    private val openAiService: OpenAiApiService
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow<RecipeFinderState>(RecipeFinderState.Idle)
     val uiState = _uiState.asStateFlow()
 
-    private val recipeRepository = RecipeRepository()
-    private val openAiService = RetrofitInstance.openAiApi
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite = _isFavorite.asStateFlow()
 
     // Caché para la última búsqueda exitosa
     private var lastSearchedIngredients: List<String>? = null
@@ -53,7 +61,7 @@ class RecipeFinderViewModel : ViewModel() {
             lastSearchedIngredients = userIngredients
             lastSearchedMood = mood
             lastSearchedTime = availableTime
-            
+
             try {
                 val realRecipes = recipeRepository.findRecipesByIngredients(userIngredients)
                 if (realRecipes.isEmpty()) {
@@ -80,6 +88,12 @@ class RecipeFinderViewModel : ViewModel() {
 
                 val finalRecipe = Gson().fromJson(jsonResponse, GeneratedRecipe::class.java)
                 _uiState.value = RecipeFinderState.Success(finalRecipe)
+                recipeRepository.saveRecipe(finalRecipe)
+
+                // LÍNEA NUEVA AÑADIDA: Guardar receta reciente en Firebase
+                recipeRepository.saveRecentRecipe(finalRecipe)
+
+                checkIfFavorite(finalRecipe.name)
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -96,11 +110,11 @@ class RecipeFinderViewModel : ViewModel() {
     ): String {
         val recipesAsText = recipesFromApi.joinToString("\n---\n") { recipe ->
             "Name: ${recipe.strMeal}\n" +
-            "ImageURL: ${recipe.strMealThumb}\n" +
-            "Category: ${recipe.strCategory}\n" +
-            "Area: ${recipe.strArea}\n" +
-            "Instructions: ${recipe.strInstructions}\n" +
-            "Ingredients: ${recipe.getIngredientsWithMeasures().joinToString()}"
+                    "ImageURL: ${recipe.strMealThumb}\n" +
+                    "Category: ${recipe.strCategory}\n" +
+                    "Area: ${recipe.strArea}\n" +
+                    "Instructions: ${recipe.strInstructions}\n" +
+                    "Ingredients: ${recipe.getIngredientsWithMeasures().joinToString()}"
         }
 
         return """
@@ -121,5 +135,29 @@ class RecipeFinderViewModel : ViewModel() {
 
         In the 'reason' field, briefly explain why you chose this recipe based on my mood, time, and ingredients.
         """
+    }
+
+    fun addOrRemoveFromFavorites(recipe: GeneratedRecipe, isFavorite: Boolean) {
+        viewModelScope.launch {
+            if (isFavorite) {
+                if (recipeDao.getFavoriteRecipesCount() < 5) {
+                    val recipeToSave = com.example.moodnutri.data.Recipe(recipe.name, recipe.toString(), true)
+                    recipeDao.insert(recipeToSave)
+                    recipeRepository.saveFavorite(recipe)
+                    _isFavorite.value = true
+                }
+            } else {
+                recipeDao.delete(recipe.name)
+                recipeRepository.removeFavorite(recipe.name)
+                _isFavorite.value = false
+            }
+        }
+    }
+
+    private fun checkIfFavorite(recipeName: String) {
+        viewModelScope.launch {
+            val favoriteRecipes = recipeDao.getFavoriteRecipes()
+            _isFavorite.value = favoriteRecipes.any { it.name == recipeName }
+        }
     }
 }

@@ -1,17 +1,23 @@
 package com.example.moodnutri.mockups
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.moodnutri.ui.GeneratedRecipeContent // Suponiendo que GeneratedRecipeContent está en el paquete ui
@@ -25,7 +31,7 @@ fun RecipeScreen(
     ingredients: List<String>,
     mood: String,
     time: String,
-    viewModel: RecipeFinderViewModel = viewModel()
+    viewModel: RecipeFinderViewModel = hiltViewModel()
 ) {
     LaunchedEffect(key1 = ingredients) {
         if (ingredients.isNotEmpty()) {
@@ -35,6 +41,7 @@ fun RecipeScreen(
     }
 
     val uiState by viewModel.uiState.collectAsState()
+    val isFavorite by viewModel.isFavorite.collectAsState()
 
     Scaffold(
         topBar = { SharedTopAppBar() },
@@ -65,6 +72,13 @@ fun RecipeScreen(
                 }
                 is RecipeFinderState.Success -> {
                     GeneratedRecipeContent(recipe = state.recipe)
+                    IconButton(onClick = { viewModel.addOrRemoveFromFavorites(state.recipe, !isFavorite) }) {
+                        Icon(
+                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Add to favorites",
+                            tint = if (isFavorite) Color.Red else Color.Gray
+                        )
+                    }
                 }
                 is RecipeFinderState.Error -> {
                     Text(state.message, color = MaterialTheme.colorScheme.error)
@@ -74,8 +88,10 @@ fun RecipeScreen(
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun RecipeScreenPreview() {
     RecipeScreen(navController = rememberNavController(), ingredients = emptyList(), mood = "Happy", time = "30 min")
 }
+*/
