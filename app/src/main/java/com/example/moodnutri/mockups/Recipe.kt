@@ -1,20 +1,6 @@
 package com.example.moodnutri.mockups
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -28,7 +14,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -42,10 +28,6 @@ import java.net.URLEncoder
 @Composable
 fun RecipeScreen(
     navController: NavController,
-    ingredients: List<String>,
-    mood: String,
-    time: String,
-    viewModel: RecipeFinderViewModel = hiltViewModel()
     ingredients: List<String> = emptyList(),
     mood: String = "",
     time: String = "",
@@ -58,7 +40,6 @@ fun RecipeScreen(
     }
 
     val uiState by viewModel.uiState.collectAsState()
-    val isFavorite by viewModel.isFavorite.collectAsState()
 
     Scaffold(
         topBar = { SharedTopAppBar() },
@@ -85,14 +66,6 @@ fun RecipeScreen(
                     }
                 }
                 is RecipeFinderState.Success -> {
-                    GeneratedRecipeContent(recipe = state.recipe)
-                    IconButton(onClick = { viewModel.addOrRemoveFromFavorites(state.recipe, !isFavorite) }) {
-                        Icon(
-                            imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "Add to favorites",
-                            tint = if (isFavorite) Color.Red else Color.Gray
-                        )
-                    }
                     GeneratedRecipeContent(recipe = state.recipe, navController = navController)
                 }
                 is RecipeFinderState.Error -> {
@@ -105,7 +78,6 @@ fun RecipeScreen(
     }
 }
 
-/*
 @Composable
 fun GeneratedRecipeContent(recipe: GeneratedRecipe, navController: NavController) {
     Column(
@@ -169,4 +141,3 @@ fun GeneratedRecipeContent(recipe: GeneratedRecipe, navController: NavController
 fun RecipeScreenPreview() {
     RecipeScreen(navController = rememberNavController(), ingredients = emptyList(), mood = "Happy", time = "30 min")
 }
-*/

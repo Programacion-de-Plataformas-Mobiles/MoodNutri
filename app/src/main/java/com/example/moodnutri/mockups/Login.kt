@@ -15,17 +15,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-// import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.moodnutri.R
-import com.example.moodnutri.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
+fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isEmailError by remember { mutableStateOf(false) }
@@ -112,11 +111,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
                 onClick = {
                     validateEmail(email)
                     if (!isEmailError && password.isNotEmpty()) {
-                        authViewModel.login(email, password) { success ->
-                            if (success) {
-                                navController.navigate("home") { popUpTo("login") { inclusive = true } }
-                            }
-                        }
+                        navController.navigate("home")
                     }
                 },
                 modifier = Modifier
@@ -137,7 +132,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextButton(onClick = { navController.navigate("signup") }) {
+            TextButton(onClick = { /* TODO: Navigate to Sign Up */ }) {
                 Text(
                     text = "Don't have an account? Sign Up",
                     color = Color.White,
@@ -148,10 +143,8 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
     }
 }
 
-/*
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(navController = rememberNavController(), authViewModel = hiltViewModel())
+    LoginScreen(navController = rememberNavController())
 }
-*/
