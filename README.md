@@ -1,15 +1,15 @@
 # 🍽️ MoodNutri
 
 > **AI-Powered Recipe Recommendations Based on Your Mood & Ingredients**
->
-> Integrantes: Lázaro Díaz y Luis Girón
-> Link Firebase: https://appdistribution.firebase.dev/i/a555624bad25dbc3
-> Link video: https://www.canva.com/design/DAG5TZvIgCU/K7ipDyGTsJ4lfPKFb70X5A/edit?utm_content=DAG5TZvIgCU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-purple.svg)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-1.5.0-green.svg)](https://developer.android.com/jetpack/compose)
 [![Firebase](https://img.shields.io/badge/Firebase-Latest-orange.svg)](https://firebase.google.com)
 [![License](https://img.shields.io/badge/License-Academic-blue.svg)]()
+
+- **Integrantes:** Lázaro Díaz y Luis Girón
+- **Link del Firebase:** https://appdistribution.firebase.dev/i/a555624bad25dbc3
+- **Link del video:** https://www.canva.com/design/DAG5TZvIgCU/K7ipDyGTsJ4lfPKFb70X5A/edit?utm_content=DAG5TZvIgCU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 
 ## 📱 Acerca del Proyecto
 
@@ -29,6 +29,80 @@
 ---
 
 ## 🏗️ Arquitectura
+
+### Diagrama de arquitectura
+
+```mermaid
+graph TB
+    subgraph "Presentation Layer"
+        UI[Jetpack Compose UI]
+        VM[ViewModels]
+        NAV[Navigation]
+        
+        UI --> VM
+        VM --> NAV
+    end
+    
+    subgraph "Domain Layer"
+        UC[Use Cases]
+        
+        UC1[SearchRecipeUseCase]
+        UC2[AnalyzeIngredientsUseCase]
+        UC3[AnalyzeMealUseCase]
+        UC4[CalculateNutritionUseCase]
+        UC5[SaveRecipeUseCase]
+        UC6[ToggleFavoriteUseCase]
+        UC7[Auth Use Cases]
+        UC8[Profile Use Cases]
+        
+        UC --> UC1
+        UC --> UC2
+        UC --> UC3
+        UC --> UC4
+        UC --> UC5
+        UC --> UC6
+        UC --> UC7
+        UC --> UC8
+    end
+    
+    subgraph "Data Layer"
+        REPO[Repositories]
+        LOCAL[Local Storage]
+        REMOTE[Remote APIs]
+        
+        REPO --> LOCAL
+        REPO --> REMOTE
+        
+        LOCAL --> ROOM[Room Database]
+        LOCAL --> DS[DataStore]
+        
+        REMOTE --> FIREBASE[Firebase Auth/Firestore]
+        REMOTE --> MEALDB[TheMealDB API]
+        REMOTE --> OPENAI[OpenAI API]
+        REMOTE --> GEMINI[Gemini API]
+    end
+    
+    VM --> UC
+    UC --> REPO
+    
+    subgraph "External Services"
+        FIREBASE
+        MEALDB
+        OPENAI
+        GEMINI
+    end
+    
+    style UI fill:#4CAF50,color:#fff
+    style VM fill:#66BB6A,color:#fff
+    style UC fill:#81C784,color:#fff
+    style REPO fill:#A5D6A7,color:#000
+    style LOCAL fill:#C8E6C9,color:#000
+    style REMOTE fill:#C8E6C9,color:#000
+    style FIREBASE fill:#FFA726,color:#fff
+    style MEALDB fill:#42A5F5,color:#fff
+    style OPENAI fill:#AB47BC,color:#fff
+    style GEMINI fill:#5C6BC0,color:#fff
+```
 
 ### Patrón MVI (Model-View-Intent)
 
@@ -373,37 +447,19 @@ Este proyecto es parte de un curso académico. Para contribuir:
 
 ---
 
-## 📄 Licencia
-
-Este proyecto fue desarrollado con fines académicos para el curso de Laboratorio de Computación Móvil de la Universidad del Valle de Guatemala.
-
----
-
-## 🙏 Agradecimientos
-
-- **Universidad del Valle de Guatemala** - Campus Central
-- **TheMealDB** - API de recetas gratuita
-- **Google Gemini** - API de IA para análisis de imágenes
-- **OpenAI** - API para generación de texto inteligente
-- **Firebase** - Plataforma de backend
-
----
-
 
 ## 📸 Screenshots
 
 ### Home Screen
-![Home](screenshots/home.png)
+<img width="175.5" height="400" alt="image" src="https://github.com/user-attachments/assets/15c00488-fb19-41bb-add0-0e7449a84de2" />
 
 ### Escaneo de Ingredientes
-![Scan](screenshots/scan_ingredients.png)
+<img width="175.5" height="400" alt="image" src="https://github.com/user-attachments/assets/aa03c3ed-0fa5-4825-aced-10da6b7cf132" />
 
 ### Receta Generada
-![Recipe](screenshots/recipe.png)
+<img width="175.5" height="400" alt="image" src="https://github.com/user-attachments/assets/519018d9-1e9f-4224-9bce-0d9a46ba629c" />
 
 ### Perfil con Tracking Nutricional
-![Profile](screenshots/profile.png)
+<img width="175.5" height="400" alt="image" src="https://github.com/user-attachments/assets/00349ce0-6b39-44f0-ad07-476da2c66ed7" />
 
 ---
-<img width="2013" height="1115" alt="mermaid-diagram-2025-11-21-000821" src="https://github.com/user-attachments/assets/88ccdc06-0aee-41c4-9e1b-a0bc194ea0ee" />
-
