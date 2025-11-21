@@ -187,7 +187,7 @@ graph LR
 ### 1. Clonar el Repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/moodnutri.git
+git clone https://github.com/Programacion-de-Plataformas-Mobiles/moodnutri.git
 cd moodnutri
 ```
 
