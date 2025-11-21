@@ -405,8 +405,5 @@ Este proyecto fue desarrollado con fines académicos para el curso de Laboratori
 ![Profile](screenshots/profile.png)
 
 ---
+<img width="2013" height="1115" alt="mermaid-diagram-2025-11-21-000821" src="https://github.com/user-attachments/assets/88ccdc06-0aee-41c4-9e1b-a0bc194ea0ee" />
 
-<div align="center">
-  <p>Hecho con ❤️ y 🤖 IA</p>
-  <p>MoodNutri © 2025</p>
-</div>
